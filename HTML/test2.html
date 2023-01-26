@@ -1,0 +1,8 @@
+<script>
+    fetch('api/carData')
+.then(res => res.json())
+.then((res) => {
+  const data = res.data;
+  console.log(data)
+});
+</script>
