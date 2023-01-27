@@ -86,22 +86,23 @@ function getInputfunc() {
 
 function deleteRow(i) {
   if (stateOfWeb == 0) {
-    newCars.splice(Number(i), 1);
-    // let tempData = newCars;
-    // const response = fetch("api/carData", {
-    //   method: "DELETE", // *GET, POST, PUT, DELETE, etc.
-    //   mode: "cors", // no-cors, *cors, same-origin
-    //   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    //   credentials: "same-origin", // include, *same-origin, omit
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     // 'Content-Type': 'application/x-www-form-urlencoded',
-    //   },
-    //   redirect: "follow", // manual, *follow, error
-    //   referrerPolicy: "no-referrer",
-    //   body: JSON.stringify(tempData),
-    // }).then((res) => console.log(res.json()));
-
+    // newCars.splice(Number(i), 1);
+    let tempData = { message: "delete request sent!" };
+    const response = fetch("api/carData", {
+      method: "DELETE", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(tempData),
+    })
+      .then((res) => res.json())
+      .then((message) => console.log(message.message));
     updateTable();
   } else {
     changeRedVerifiedText("You are in edit mode!");
