@@ -64,8 +64,7 @@ function verifyInput() {
 function getInputfunc() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
-  let id = (+new Date()).toString(32);
-  let temp = { name: name, price: price, id: id };
+  let temp = { name: name, price: price };
   //console.log(temp);
   let tempData = temp;
   const response = fetch("api/carData", {
@@ -80,16 +79,24 @@ function getInputfunc() {
     redirect: "follow", // manual, *follow, error
     referrerPolicy: "no-referrer",
     body: JSON.stringify(tempData),
-  });
-  newCars.push(temp);
-  updateTable();
-  document.getElementById("name").value = "";
-  document.getElementById("price").value = "";
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      temp = { ...temp, ...res };
+      newCars.push(temp);
+      // console.log(newCars);
+      updateTable();
+      document.getElementById("name").value = "";
+      document.getElementById("price").value = "";
+    });
 }
 
 function deleteRow(i) {
   if (stateOfWeb == 0) {
-    let tempData = { id: newCars[i].id };
+    let tempData = { id: newCars[i]["id"] };
+    // console.log(newCars);
+    // console.log(i);
     const response = fetch("api/carData", {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
