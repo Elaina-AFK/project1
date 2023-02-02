@@ -64,7 +64,8 @@ function verifyInput() {
 function getInputfunc() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
-  let temp = { name: name, price: price };
+  let id = (+new Date()).toString(32);
+  let temp = { name: name, price: price, id: id };
   //console.log(temp);
   let tempData = temp;
   const response = fetch("api/carData", {
@@ -82,12 +83,13 @@ function getInputfunc() {
   });
   newCars.push(temp);
   updateTable();
+  document.getElementById("name").value = "";
+  document.getElementById("price").value = "";
 }
 
 function deleteRow(i) {
   if (stateOfWeb == 0) {
-    // newCars.splice(Number(i), 1);
-    let tempData = { message: "delete request sent!" };
+    let tempData = { id: newCars[i].id };
     const response = fetch("api/carData", {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -103,6 +105,7 @@ function deleteRow(i) {
     })
       .then((res) => res.json())
       .then((message) => console.log(message.message));
+    newCars.splice(Number(i), 1);
     updateTable();
   } else {
     changeRedVerifiedText("You are in edit mode!");

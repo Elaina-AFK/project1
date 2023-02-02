@@ -29,10 +29,10 @@ app.post("/api/carData", function (req, res) {
     "utf8",
     function (err, data) {
       let tempData = JSON.parse(data);
-      let id = (+new Date()).toString(32);
-      tempData = [...tempData, { ...req.body, id }];
-      tempdata = JSON.stringify(tempData);
-      fs.writeFile("data/carData.json", tempdata, (err) => {
+      // let id = (+new Date()).toString(32);
+      // tempData = [...tempData, { ...req.body, id }];
+      tempData = JSON.stringify(tempData);
+      fs.writeFile("data/carData.json", tempData, (err) => {
         if (err) console.log(err);
         console.log("added data!");
       });
@@ -42,8 +42,21 @@ app.post("/api/carData", function (req, res) {
 
 app.delete("/api/carData", function (req, res) {
   console.log("get called");
-  console.log("request messgae: ", req.body);
+  console.log("request message: ", req.body);
   res.send(JSON.stringify({ message: "got delete requested!" }));
+  const newData = fs.readFile(
+    "data/carData.json",
+    "utf8",
+    function (err, data) {
+      let tempData = JSON.parse(data);
+      tempData = tempData.filter((x) => x.id !== req.body.id);
+      tempData = JSON.stringify;
+      fs.writeFile("data/carData.json", tempData, (err) => {
+        if (err) console.log(err);
+        console.log("deleted data!");
+      });
+    }
+  );
 });
 
 var server = app.listen(8081, function () {
