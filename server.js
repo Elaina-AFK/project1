@@ -59,6 +59,30 @@ app.delete("/api/carData", function (req, res) {
   );
 });
 
+app.put("/api/carData", function (req, res) {
+  console.log("(put) get called");
+  console.log("request message: ", req.body);
+  res.send(JSON.stringify({ message: "got put requested!" }));
+  const newData = fs.readFile(
+    "data/carData.json",
+    "utf8",
+    function (err, data) {
+      let tempData = JSON.parse(data);
+      for (let i = 0; i < data.length; i++) {
+        if (tempData[i]["id"] === req.body.id) {
+          tempData[i] = { ...tempData[i], ...req.body };
+          break;
+        }
+      }
+      tempData = JSON.stringify(tempData);
+      fs.writeFile("data/carData.json", tempData, (err) => {
+        if (err) console.log(err);
+        console.log("edited data!");
+      });
+    }
+  );
+});
+
 var server = app.listen(8081, function () {
   var host = server.address().address;
   var port = server.address().port;

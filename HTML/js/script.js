@@ -175,9 +175,28 @@ function updateData(i) {
   let name = document.getElementById("nameEdit").value;
   let price = document.getElementById("priceEdit").value;
   let temp = { name: name, price: price };
-  newCars.splice(i, 1, temp);
-  updateTable();
-  stateOfWeb = 0;
+  newCars[i] = { ...newCars[i], ...temp };
+  let tempData = newCars[i];
+  const response = fetch("api/carData", {
+    method: "PUT", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer",
+    body: JSON.stringify(tempData),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      updateTable();
+      stateOfWeb = 0;
+    });
+
   //console.log("back to state 0");
 }
 
