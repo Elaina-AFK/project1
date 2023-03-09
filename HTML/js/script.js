@@ -82,10 +82,9 @@ function getInputfunc() {
   })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res);
-      temp = { ...temp, ...res };
+      console.log(res.message);
+      temp = { ...temp, id: res.id };
       newCars.push(temp);
-      // console.log(newCars);
       updateTable();
       document.getElementById("name").value = "";
       document.getElementById("price").value = "";
@@ -95,8 +94,6 @@ function getInputfunc() {
 function deleteRow(i) {
   if (stateOfWeb == 0) {
     let tempData = { id: newCars[i]["id"] };
-    // console.log(newCars);
-    // console.log(i);
     const response = fetch("api/carData", {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -138,15 +135,8 @@ function changeRedVerifiedText(text) {
 }
 
 function editRow(i) {
-  //change state
-  //change text row to form and change edit button to update only that row (func)
-  //verify Input
-  //if success change state
-  //make change data
-  //updatescreen
   if (stateOfWeb == 0) {
     stateOfWeb = 1;
-    //console.log("edit mode activated!");
     changeRowToForm(i);
   }
 }
@@ -192,7 +182,7 @@ function updateData(i) {
   })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res);
+      console.log(res.message);
       updateTable();
       stateOfWeb = 0;
     });
