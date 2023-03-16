@@ -149,15 +149,19 @@ function changeRedVerifiedText(text) {
 }
 
 function editRow(i) {
-  if (stateOfWeb == 0) {
+  if (stateOfWeb === 0) {
     stateOfWeb = 1;
-    changeRowToForm(i);
+    if (searchedState === 0) {
+      changeRowToForm(newCars, i);
+    } else {
+      changeRowToForm(searchedCars, i);
+    }
   }
 }
 
-function changeRowToForm(i) {
-  let tempName = newCars[i]["name"];
-  let tempPrice = newCars[i]["price"];
+function changeRowToForm(showedCars, i) {
+  let tempName = showedCars[i]["name"];
+  let tempPrice = showedCars[i]["price"];
   document.getElementById("tableNameRow" + String(i)).innerHTML =
     "<form><input type='text' id='nameEdit' value='" + tempName + "'></form>";
   document.getElementById("tablePriceRow" + String(i)).innerHTML =
@@ -179,8 +183,16 @@ function updateData(i) {
   let name = document.getElementById("nameEdit").value;
   let price = document.getElementById("priceEdit").value;
   let temp = { name: name, price: price };
-  newCars[i] = { ...newCars[i], ...temp };
-  let tempData = newCars[i];
+  let tempData = [];
+  if (searchedState === 0) {
+    newCars[i] = { ...newCars[i], ...temp };
+    tempData = newCars[i];
+  } else {
+    searchedCars[i] = { ...searchedCars[i], ...temp };
+    const ind = newCars.findIndex((car) => car.id === searchedCars[i].id);
+    newCars[ind] = { ...newCars[ind], ...temp };
+    tempData = searchedCars[i];
+  }
   const response = fetch("api/carData", {
     method: "PUT", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -197,7 +209,11 @@ function updateData(i) {
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
-      updateTable(newCars);
+      if (searchedState === 0) {
+        updateTable(newCars);
+      } else {
+        updateTable(searchedCars);
+      }
       stateOfWeb = 0;
     });
 
@@ -281,6 +297,7 @@ function searchByName() {
   if (searchValue === "") {
     updateTable(newCars);
     searchedState = 0;
+    searchedCars = [];
     return;
   }
   const regex = new RegExp(searchValue);
