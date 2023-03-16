@@ -290,10 +290,7 @@ function removeItemFromList(listOfData, item) {
 }
 
 function searchByName() {
-  const searchValue = document
-    .getElementById("searchBar")
-    .value.trim()
-    .toLowerCase();
+  const searchValue = document.getElementById("searchBar").value.trim();
   if (searchValue === "") {
     updateTable(newCars);
     searchedState = 0;
