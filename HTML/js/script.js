@@ -1,5 +1,7 @@
 let newCars = [];
+let searchedCars = [];
 let stateOfWeb = 0;
+let searchedState = 0;
 fetch("api/carData")
   .then((res) => res.json())
   .then((res) => {
@@ -7,19 +9,19 @@ fetch("api/carData")
     newCars = cars.slice();
 
     // console.log("data: ", newCars);
-    updateTable();
+    updateTable(newCars);
   });
 
-function updateTable() {
+function updateTable(showedCars) {
   // console.log("Calling updateTable");
   let text =
     "<thead><tr><th scope='col'>Name</th><th scope='col'>Price<button type='button' id='arrButton' onclick='hightoLow()' class='btn btn-sm btn-outline-light pull-right'>.</button></th><th scope='col'></th><th scope='col'></th></tr></thead>";
   let table_buffer = "</td><td>";
-  for (let i = 0; i < newCars.length; i++) {
+  for (let i = 0; i < showedCars.length; i++) {
     text += "<tr><td id='tableNameRow" + String(i) + "'>";
-    text += newCars[i]["name"];
+    text += showedCars[i]["name"];
     text += "</td><td id='tablePriceRow" + String(i) + "'>";
-    text += newCars[i]["price"];
+    text += showedCars[i]["price"];
     text += table_buffer;
     text +=
       "<button type='button' onclick='deleteRow(" +
@@ -85,32 +87,44 @@ function getInputfunc() {
       console.log(res.message);
       temp = { ...temp, id: res.id };
       newCars.push(temp);
-      updateTable();
+      updateTable(newCars);
       document.getElementById("name").value = "";
       document.getElementById("price").value = "";
     });
 }
 
+function deleteCarById(showedCars, i) {
+  const tempData = { id: showedCars[i]["id"] };
+  const response = fetch("api/carData", {
+    method: "DELETE", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer",
+    body: JSON.stringify(tempData),
+  })
+    .then((res) => res.json())
+    .then((message) => {
+      console.log(message.message);
+    });
+  newCars = newCars.filter((car) => car.id !== tempData["id"]);
+  searchedCars = searchedCars.filter((car) => car.id !== tempData["id"]);
+}
+
 function deleteRow(i) {
   if (stateOfWeb == 0) {
-    let tempData = { id: newCars[i]["id"] };
-    const response = fetch("api/carData", {
-      method: "DELETE", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify(tempData),
-    })
-      .then((res) => res.json())
-      .then((message) => console.log(message.message));
-    newCars.splice(Number(i), 1);
-    updateTable();
+    if (searchedState == 0) {
+      deleteCarById(newCars, i);
+      updateTable(newCars);
+    } else {
+      deleteCarById(searchedCars, i);
+      updateTable(searchedCars);
+    }
   } else {
     changeRedVerifiedText("You are in edit mode!");
   }
@@ -183,7 +197,7 @@ function updateData(i) {
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
-      updateTable();
+      updateTable(newCars);
       stateOfWeb = 0;
     });
 
@@ -191,7 +205,7 @@ function updateData(i) {
 }
 
 function cancelUpdate(i) {
-  updateTable();
+  updateTable(newCars);
   stateOfWeb = 0;
   //console.log("back to state 0");
 }
@@ -204,7 +218,7 @@ function hightoLow() {
   newCars = tempCars;
 
   //updateTable
-  updateTable();
+  updateTable(newCars);
 
   //change button
   let tempButton = document.getElementById("arrButton");
@@ -220,7 +234,7 @@ function lowtoHigh() {
   newCars = tempCars;
 
   //updateTable
-  updateTable();
+  updateTable(newCars);
 
   //change button
   let tempButton = document.getElementById("arrButton");
@@ -257,4 +271,20 @@ function removeItemFromList(listOfData, item) {
   if (index !== -1) {
     listOfData.splice(index, 1);
   }
+}
+
+function searchByName() {
+  const searchValue = document
+    .getElementById("searchBar")
+    .value.trim()
+    .toLowerCase();
+  if (searchValue === "") {
+    updateTable(newCars);
+    searchedState = 0;
+    return;
+  }
+  const regex = new RegExp(searchValue);
+  searchedCars = newCars.filter((car) => regex.test(car.name.toLowerCase()));
+  updateTable(searchedCars);
+  searchedState = 1;
 }
