@@ -2,6 +2,8 @@ let newCars = [];
 let searchedCars = [];
 let stateOfWeb = 0;
 let searchedState = 0;
+let filterCounter = 0;
+let filterDict = {};
 fetch("api/carData")
   .then((res) => res.json())
   .then((res) => {
@@ -292,13 +294,49 @@ function removeItemFromList(listOfData, item) {
 function searchByName() {
   const searchValue = document.getElementById("searchBar").value.trim();
   if (searchValue === "") {
+    return;
+  }
+
+  createFilter(searchValue);
+  if (searchedState === 0) {
+    searchedState = 1;
+  }
+
+  filterSearch();
+  updateTable(searchedCars);
+  document.getElementById("searchBar").value = "";
+}
+
+function filterSearch() {
+  const filterValues = Object.values(filterDict);
+  const regex = new RegExp(filterValues[0]);
+  searchedCars = newCars.filter((car) => regex.test(car.name));
+  for (let i = 1; i < filterValues.length; i++) {
+    const regex = new RegExp(filterValues[i]);
+    searchedCars = searchedCars.filter((car) => regex.test(car.name));
+  }
+}
+
+function createFilter(filterWord) {
+  filterCounter += 1;
+  const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<input type="button" value="cancel" onclick="deleteElementById('filterWord${filterCounter}')"></div>`;
+  filterDict[`filterWord${filterCounter}`] = filterWord;
+  document.getElementById("filter").innerHTML += filterTemplate;
+}
+
+function deleteElementById(id) {
+  delete filterDict[id];
+  document.getElementById(id).outerHTML = "";
+  if (document.getElementById("filter").innerHTML.trim() === "") {
     updateTable(newCars);
     searchedState = 0;
     searchedCars = [];
     return;
   }
-  const regex = new RegExp(searchValue);
-  searchedCars = newCars.filter((car) => regex.test(car.name.toLowerCase()));
+  filterSearch();
   updateTable(searchedCars);
-  searchedState = 1;
 }
+
+// แก้ search field เป็น show filter with cancel button
+// เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
+// แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ
