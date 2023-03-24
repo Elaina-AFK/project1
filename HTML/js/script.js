@@ -16,14 +16,19 @@ fetch("api/carData")
 
 function updateTable(showedCars) {
   // console.log("Calling updateTable");
-  let text =
-    "<thead><tr><th scope='col'>Name</th><th scope='col'>Price<button type='button' id='arrButton' onclick='hightoLow()' class='btn btn-sm btn-outline-light pull-right'>.</button></th><th scope='col'></th><th scope='col'></th></tr></thead>";
+  let text = tableHeadString();
   let table_buffer = "</td><td>";
   for (let i = 0; i < showedCars.length; i++) {
     text += "<tr><td id='tableNameRow" + String(i) + "'>";
     text += showedCars[i]["name"];
     text += "</td><td id='tablePriceRow" + String(i) + "'>";
     text += showedCars[i]["price"];
+    text += table_buffer;
+    text += showedCars[i]["year"];
+    text += table_buffer;
+    text += showedCars[i]["addDate"];
+    text += table_buffer;
+    text += showedCars[i]["modifiedDate"];
     text += table_buffer;
     text +=
       "<button type='button' onclick='deleteRow(" +
@@ -41,6 +46,26 @@ function updateTable(showedCars) {
     text += "</td></tr>";
   }
   document.getElementById("demo").innerHTML = text;
+}
+
+function tableHeadString() {
+  const headingName = "<th scope='col'>Name</th>";
+  const headingPrice =
+    "<th scope='col'>Price<button type='button' id='arrButton' onclick='hightoLow()' class='btn btn-sm btn-outline-light pull-right'>.</button></th>";
+  const headingYear = "<th scope='col'>Year</th>";
+  const headingAdd = "<th scope='col'>Added Date</th>";
+  const headingModified = "<th scope='col'>Modified Date</th>";
+  const editHead = "<th scope='col'></th><th scope='col'></th>";
+  return (
+    "<thead><tr>" +
+    headingName +
+    headingPrice +
+    headingYear +
+    headingAdd +
+    headingModified +
+    editHead +
+    "</tr></thead>"
+  );
 }
 
 function verifyInput() {
@@ -69,9 +94,7 @@ function getInputfunc() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
   let temp = { name: name, price: price };
-  //console.log(temp);
-  let tempData = temp;
-  const response = htmlMethod("POST", tempData)
+  const response = htmlMethod("POST", temp)
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
