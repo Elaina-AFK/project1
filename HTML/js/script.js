@@ -71,19 +71,7 @@ function getInputfunc() {
   let temp = { name: name, price: price };
   //console.log(temp);
   let tempData = temp;
-  const response = fetch("api/carData", {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(tempData),
-  })
+  const response = htmlMethod("POST", tempData)
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
@@ -97,19 +85,7 @@ function getInputfunc() {
 
 function deleteCarById(showedCars, i) {
   const tempData = { id: showedCars[i]["id"] };
-  const response = fetch("api/carData", {
-    method: "DELETE", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(tempData),
-  })
+  const response = htmlMethod("DELETE", tempData)
     .then((res) => res.json())
     .then((message) => {
       console.log(message.message);
@@ -195,19 +171,7 @@ function updateData(i) {
     newCars[ind] = { ...newCars[ind], ...temp };
     tempData = searchedCars[i];
   }
-  const response = fetch("api/carData", {
-    method: "PUT", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(tempData),
-  })
+  const response = htmlMethod("PUT", tempData)
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
@@ -337,6 +301,22 @@ function deleteElementById(id) {
   updateTable(searchedCars);
 }
 
-// แก้ search field เป็น show filter with cancel button
+function htmlMethod(method, data) {
+  return fetch("api/carData", {
+    method: method, // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer",
+    body: JSON.stringify(data),
+  });
+}
+
+// แก้ search field เป็น show filter with cancel button (DONE!)
 // เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
-// แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ
+// แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
