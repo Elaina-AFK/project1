@@ -74,11 +74,12 @@ app.put("/api/carData", function (req, res) {
     {
       name: req.body.name,
       price: req.body.price,
+      year: req.body.year,
     },
     (err, oldData) => {
       Car.findOne({ id: req.body.id }, (err, newData) => {
         console.log(
-          `update ${oldData.name} with ${oldData.price} to ${newData.name} with ${newData.price} [PUT successful!]`
+          `update ${oldData.name} with ${oldData.price} with Year: ${oldData.year} to ${newData.name} with ${newData.price} with Year: ${newData.year}[PUT successful!]`
         );
         res.send(JSON.stringify({ message: "put successful!" }));
       });

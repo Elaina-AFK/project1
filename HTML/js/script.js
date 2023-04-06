@@ -25,7 +25,7 @@ function updateTable(showedCars) {
     text += showedCars[i]["name"];
     text += "</td><td id='tablePriceRow" + String(i) + "'>";
     text += showedCars[i]["price"];
-    text += table_buffer;
+    text += "</td><td id='tableYearRow" + String(i) + "'>";
     text += showedCars[i]["year"];
     text += table_buffer;
     text += showedCars[i]["addDate"];
@@ -167,13 +167,26 @@ function editRow(i) {
   }
 }
 
+function theToForm(idName, variableName) {
+  return `<form><input type='text' id='${idName}' value='${variableName}'></form>`;
+}
+
 function changeRowToForm(showedCars, i) {
   let tempName = showedCars[i]["name"];
   let tempPrice = showedCars[i]["price"];
-  document.getElementById("tableNameRow" + String(i)).innerHTML =
-    "<form><input type='text' id='nameEdit' value='" + tempName + "'></form>";
-  document.getElementById("tablePriceRow" + String(i)).innerHTML =
-    "<form><input type='text' id='priceEdit' value='" + tempPrice + "'></form>";
+  let tempYear = showedCars[i]["year"];
+  document.getElementById("tableNameRow" + String(i)).innerHTML = theToForm(
+    "nameEdit",
+    tempName
+  );
+  document.getElementById("tablePriceRow" + String(i)).innerHTML = theToForm(
+    "priceEdit",
+    tempPrice
+  );
+  document.getElementById("tableYearRow" + String(i)).innerHTML = theToForm(
+    "yearEdit",
+    tempYear
+  );
   document.getElementById("editButton" + i).innerHTML = "update";
   document
     .getElementById("editButton" + i)
@@ -190,7 +203,8 @@ function changeRowToForm(showedCars, i) {
 function updateData(i) {
   let name = document.getElementById("nameEdit").value;
   let price = document.getElementById("priceEdit").value;
-  let temp = { name: name, price: price };
+  let year = document.getElementById("yearEdit").value;
+  let temp = { name: name, price: price, year: year };
   let tempData = [];
   if (searchedState === 0) {
     newCars[i] = { ...newCars[i], ...temp };
@@ -361,3 +375,4 @@ function addYearOption() {
 // แก้ search field เป็น show filter with cancel button (DONE!)
 // เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
 // แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
+// ทำให้ปีแก้ไขได้ (DONE!)
