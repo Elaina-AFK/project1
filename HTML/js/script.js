@@ -4,6 +4,7 @@ let stateOfWeb = 0;
 let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
+// fetch
 fetch("api/carData")
   .then((res) => res.json())
   .then((res) => {
@@ -12,6 +13,7 @@ fetch("api/carData")
 
     // console.log("data: ", newCars);
     updateTable(newCars);
+    addYearOption();
   });
 
 function updateTable(showedCars) {
@@ -93,7 +95,8 @@ function verifyInput() {
 function getInputfunc() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
-  let temp = { name: name, price: price };
+  let year = document.getElementById("year").value;
+  let temp = { name: name, price: price, year: year };
   const response = htmlMethod("POST", temp)
     .then((res) => res.json())
     .then((res) => {
@@ -103,6 +106,7 @@ function getInputfunc() {
       updateTable(newCars);
       document.getElementById("name").value = "";
       document.getElementById("price").value = "";
+      document.getElementById("year").value = "";
     });
 }
 
@@ -338,6 +342,17 @@ function htmlMethod(method, data) {
     referrerPolicy: "no-referrer",
     body: JSON.stringify(data),
   });
+}
+
+function addYearOption() {
+  const d = new Date();
+  let startYear = d.getFullYear();
+  let allOptionValue = "";
+  while (startYear >= 1900) {
+    allOptionValue += `<option value="${startYear}">${startYear}</option>`;
+    startYear -= 1;
+  }
+  document.getElementById("year").innerHTML = allOptionValue;
 }
 
 // แก้ search field เป็น show filter with cancel button (DONE!)
