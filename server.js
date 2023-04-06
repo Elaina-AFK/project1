@@ -14,6 +14,10 @@ const CarSchema = mongoose.Schema({
   name: String,
   price: Number,
   id: String,
+  year: {
+    type: Number,
+    default: 2023,
+  },
 });
 const Car = mongoose.model("Car", CarSchema, "carStock");
 //
