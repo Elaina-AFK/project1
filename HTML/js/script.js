@@ -28,9 +28,9 @@ function updateTable(showedCars) {
     text += "</td><td id='tableYearRow" + String(i) + "'>";
     text += showedCars[i]["year"];
     text += table_buffer;
-    text += showedCars[i]["addDate"];
+    text += formatDate(showedCars[i]["added"]);
     text += table_buffer;
-    text += showedCars[i]["modifiedDate"];
+    text += formatDate(showedCars[i]["modified"]);
     text += table_buffer;
     text +=
       "<button type='button' onclick='deleteRow(" +
@@ -104,7 +104,7 @@ function getInputfunc() {
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
-      temp = { ...temp, id: res.id };
+      temp = { ...temp, id: res.id, added: res.added, modified: res.modified };
       newCars.push(temp);
       updateTable(newCars);
       document.getElementById("name").value = "";
@@ -220,8 +220,10 @@ function updateData(i) {
     .then((res) => {
       console.log(res.message);
       if (searchedState === 0) {
+        newCars[i].modified = res.modified;
         updateTable(newCars);
       } else {
+        searchedCars[i].modified = res.modified;
         updateTable(searchedCars);
       }
       stateOfWeb = 0;
@@ -372,7 +374,22 @@ function addYearOption() {
   document.getElementById("year").innerHTML = allOptionValue;
 }
 
+function formatDate(date) {
+  const d = new Date(date);
+  return `${timeFormat(d.getDate())}-${timeFormat(
+    d.getMonth() + 1
+  )}-${d.getFullYear()}\n${timeFormat(d.getHours())}:${timeFormat(
+    d.getMinutes()
+  )}:${timeFormat(d.getSeconds())}`;
+}
+
+function timeFormat(str) {
+  const tStr = String(str);
+  if (tStr.length === 2) return tStr;
+  if (tStr.length === 1) return "0" + tStr;
+}
 // แก้ search field เป็น show filter with cancel button (DONE!)
 // เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
 // แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
 // ทำให้ปีแก้ไขได้ (DONE!)
+// เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย

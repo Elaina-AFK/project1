@@ -18,6 +18,8 @@ const CarSchema = mongoose.Schema({
     type: Number,
     default: 2023,
   },
+  added: Date,
+  modified: Date,
 });
 const Car = mongoose.model("Car", CarSchema, "carStock");
 //
@@ -43,14 +45,27 @@ app.get("/api/carData", function (req, res) {
 app.post("/api/carData", function (req, res) {
   console.log("(post) get called");
   console.log("Got body:", req.body);
-  let id = (+new Date()).toString(32);
+  const addDate = +new Date();
+  let id = addDate.toString(32);
   // console.log({ ...req.body, id });
-  let tempCar = new Car({ ...req.body, id }); // object
+  let tempCar = new Car({
+    ...req.body,
+    id,
+    added: new Date(addDate),
+    modified: new Date(addDate),
+  }); // object
 
   tempCar.save(function (err, car) {
     if (err) return console.log(err);
     console.log(car.name, "saved to store collection [POST successful!]");
-    res.send(JSON.stringify({ message: "post successful!", id: id }));
+    res.send(
+      JSON.stringify({
+        message: "post successful!",
+        id: id,
+        added: new Date(addDate),
+        modified: new Date(addDate),
+      })
+    );
   });
 });
 
@@ -69,19 +84,26 @@ app.delete("/api/carData", function (req, res) {
 app.put("/api/carData", function (req, res) {
   console.log("(put) get called");
   console.log("request message: ", req.body);
+  const modifiedDate = +new Date();
   Car.findOneAndUpdate(
     { id: req.body.id },
     {
       name: req.body.name,
       price: req.body.price,
       year: req.body.year,
+      modified: new Date(modifiedDate),
     },
     (err, oldData) => {
       Car.findOne({ id: req.body.id }, (err, newData) => {
         console.log(
           `update ${oldData.name} with ${oldData.price} with Year: ${oldData.year} to ${newData.name} with ${newData.price} with Year: ${newData.year}[PUT successful!]`
         );
-        res.send(JSON.stringify({ message: "put successful!" }));
+        res.send(
+          JSON.stringify({
+            message: "put successful!",
+            modified: new Date(modifiedDate),
+          })
+        );
       });
     }
   );
