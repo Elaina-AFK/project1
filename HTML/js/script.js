@@ -50,13 +50,23 @@ function updateTable(showedCars) {
   document.getElementById("demo").innerHTML = text;
 }
 
+function onclickArrangeString(property, ID) {
+  return `onclick="hightoLow('${property}', '${ID}')"`;
+}
+
+function headString(headName, headId, property) {
+  return (
+    `<th scope='col' id='${headId}' ` +
+    onclickArrangeString(property, headId) +
+    `>${headName}</th>`
+  );
+}
 function tableHeadString() {
-  const headingName = "<th scope='col'>Name</th>";
-  const headingPrice =
-    "<th scope='col'>Price<button type='button' id='arrButton' onclick='hightoLow()' class='btn btn-sm btn-outline-light pull-right'>.</button></th>";
-  const headingYear = "<th scope='col'>Year</th>";
-  const headingAdd = "<th scope='col'>Added Date</th>";
-  const headingModified = "<th scope='col'>Modified Date</th>";
+  const headingName = headString("Name", "nameHead", "name");
+  const headingPrice = headString("Price", "priceHead", "price");
+  const headingYear = headString("Year", "yearHead", "year");
+  const headingAdd = headString("Added Date", "addHead", "added");
+  const headingModified = headString("Modified Date", "modifyHead", "modified");
   const editHead = "<th scope='col'></th><th scope='col'></th>";
   return (
     "<thead><tr>" +
@@ -238,60 +248,49 @@ function cancelUpdate(i) {
   //console.log("back to state 0");
 }
 
-function hightoLow() {
-  //arrange function
-  let tempCars = arranging(newCars);
-
-  //change database
-  newCars = tempCars;
+function hightoLow(propName, buttonID) {
+  if (typeof newCars[0][propName] === "string") {
+    newCars.sort((a, b) => {
+      if (a[propName] > b[propName]) {
+        return 1;
+      }
+      if (a[propName] < b[propName]) {
+        return -1;
+      }
+      return 0;
+    });
+  } else if (typeof newCars[0][propName] === "number") {
+    newCars.sort((a, b) => b[propName] - a[propName]);
+  }
 
   //updateTable
   updateTable(newCars);
 
   //change button
-  let tempButton = document.getElementById("arrButton");
-  tempButton.innerHTML = "^";
-  tempButton.setAttribute("onclick", "lowtoHigh()");
+  let tempButton = document.getElementById(buttonID);
+  tempButton.setAttribute("onclick", `lowtoHigh('${propName}', '${buttonID}')`);
 }
 
-function lowtoHigh() {
-  //arrange function
-  let tempCars = arranging(newCars, false);
-
-  //change database
-  newCars = tempCars;
-
+function lowtoHigh(propName, buttonID) {
+  if (typeof newCars[0][propName] === "string") {
+    newCars.sort((a, b) => {
+      if (a[propName] < b[propName]) {
+        return 1;
+      }
+      if (a[propName] > b[propName]) {
+        return -1;
+      }
+      return 0;
+    });
+  } else if (typeof newCars[0][propName] === "number") {
+    newCars.sort((a, b) => a[propName] - b[propName]);
+  }
   //updateTable
   updateTable(newCars);
 
   //change button
-  let tempButton = document.getElementById("arrButton");
-  tempButton.innerHTML = "v";
-  tempButton.setAttribute("onclick", "hightoLow()");
-}
-
-function getMin(listOfData) {
-  let min = listOfData[0];
-  for (let i = 1; i < listOfData.length; i++) {
-    if (Number(min["price"]) > Number(listOfData[i]["price"])) {
-      min = listOfData[i];
-    }
-  }
-  return min;
-}
-
-function arranging(listOfData, reverse = true) {
-  let sortedList = [];
-  let length = listOfData.length;
-  for (let i = 0; i < length; i++) {
-    let min = getMin(listOfData);
-    sortedList.push(min);
-    removeItemFromList(listOfData, min);
-  }
-  if (reverse === false) {
-    sortedList.reverse();
-  }
-  return sortedList;
+  let tempButton = document.getElementById(buttonID);
+  tempButton.setAttribute("onclick", `hightoLow('${propName}', '${buttonID}')`);
 }
 
 function removeItemFromList(listOfData, item) {
@@ -393,3 +392,4 @@ function timeFormat(str) {
 // แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
 // ทำให้ปีแก้ไขได้ (DONE!)
 // เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย
+// แยกฟังก์ชั่นเป็นโมดูลต่างๆไว้ file อื่นๆ
