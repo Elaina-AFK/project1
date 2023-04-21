@@ -5,7 +5,7 @@ let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
 // fetch
-fetch("api/carData")
+fetch("/api/carData")
   .then((res) => res.json())
   .then((res) => {
     const cars = res;
@@ -347,7 +347,7 @@ function deleteElementById(id) {
 }
 
 function htmlMethod(method, data) {
-  return fetch("api/carData", {
+  return fetch("/api/carData", {
     method: method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
