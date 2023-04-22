@@ -4,6 +4,11 @@ import {
   sortObjectByPropHighToLow,
   sortObjectByPropLowToHigh,
 } from "./utils/utilities.js";
+import {
+  addOnclickById,
+  changeTextProperty,
+  changeRedVerifiedText,
+} from "./utils/dom.js";
 
 let newCars = [];
 let searchedCars = [];
@@ -170,15 +175,6 @@ function getNameData() {
   return allName;
 }
 
-function changeTextProperty(id, colorText, text) {
-  document.getElementById(id).style = "color: " + colorText;
-  document.getElementById(id).innerHTML = text;
-}
-
-function changeRedVerifiedText(text) {
-  changeTextProperty("verifiedText", "Red", text);
-}
-
 function editRow(i) {
   if (stateOfWeb === 0) {
     stateOfWeb = 1;
@@ -190,7 +186,7 @@ function editRow(i) {
   }
 }
 
-function theToForm(idName, variableName) {
+function toFormString(idName, variableName) {
   return `<form><input type='text' id='${idName}' value='${variableName}'></form>`;
 }
 
@@ -198,15 +194,15 @@ function changeRowToForm(showedCars, i) {
   let tempName = showedCars[i]["name"];
   let tempPrice = showedCars[i]["price"];
   let tempYear = showedCars[i]["year"];
-  document.getElementById("tableNameRow" + String(i)).innerHTML = theToForm(
+  document.getElementById("tableNameRow" + String(i)).innerHTML = toFormString(
     "nameEdit",
     tempName
   );
-  document.getElementById("tablePriceRow" + String(i)).innerHTML = theToForm(
+  document.getElementById("tablePriceRow" + String(i)).innerHTML = toFormString(
     "priceEdit",
     tempPrice
   );
-  document.getElementById("tableYearRow" + String(i)).innerHTML = theToForm(
+  document.getElementById("tableYearRow" + String(i)).innerHTML = toFormString(
     "yearEdit",
     tempYear
   );
@@ -310,11 +306,11 @@ function createFilter(filterWord) {
   filterDict[`filterWord${filterCounter}`] = filterWord;
   document.getElementById("filter").innerHTML += filterTemplate;
   addOnclickById(`cancel${filterCounter}`, () => {
-    deleteElementById(`filterWord${filterCounter}`);
+    deleteFilterById(`filterWord${filterCounter}`);
   });
 }
 
-function deleteElementById(id) {
+function deleteFilterById(id) {
   delete filterDict[id];
   document.getElementById(id).outerHTML = "";
   if (document.getElementById("filter").innerHTML.trim() === "") {
@@ -336,10 +332,6 @@ function addYearOption() {
     startYear -= 1;
   }
   document.getElementById("year").innerHTML = allOptionValue;
-}
-
-function addOnclickById(id, func) {
-  document.getElementById(id).addEventListener("click", func);
 }
 
 // แก้ search field เป็น show filter with cancel button (DONE!)
