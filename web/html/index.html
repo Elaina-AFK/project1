@@ -10,17 +10,17 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" crossorigin="anonymous"></script>    
     <!-- Latest compiled and minified JavaScript -->
-    <script src="../js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="../js/utils/bootstrap.min.js" crossorigin="anonymous"></script>
 
-    <script src="../js/main.js"></script>
+    <script type="module" src="../js/main.js"></script>
     
 </head>
 <body>
-
-<h2>JavaScript For Loop 🗿</h2>
+<div id="mainDiv">
+<h2>Cars Table 🚘</h2>
 <form>
     <input type="text" id="searchBar" placeholder="Search by Name">
-    <input type="button" value="search" onclick="searchByName()">
+    <input id="searchButton" type="button" value="search">
     <div id="filter"></div>
 </form>
 <table id="demo" class="table table-striped table-bordered table-hover table-dark"></table><br><br><br>
@@ -29,9 +29,9 @@
     <label for="name">Name: </label><input type="text" id="name"><br>
     <label for="price">Price: </label><input type="text" id="price"><br>
     <label for="year">Year: </label><select id="year" name="year"></select><br>
-    <input type="button" onclick="verifyInput()" value="Submit">
+    <input id="submitButton" type="button" value="Submit">
 </form>
-
+</div>
 
 </body>
 </html>

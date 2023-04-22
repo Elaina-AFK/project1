@@ -1,9 +1,19 @@
+import { htmlMethod } from "./utils/api.js";
+import {
+  formatDate,
+  sortObjectByPropHighToLow,
+  sortObjectByPropLowToHigh,
+} from "./utils/utilities.js";
+
 let newCars = [];
 let searchedCars = [];
 let stateOfWeb = 0;
 let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
+// add onclick property
+addOnclickById("searchButton", searchByName);
+addOnclickById("submitButton", verifyInput);
 // fetch
 fetch("/api/carData")
   .then((res) => res.json())
@@ -18,8 +28,10 @@ fetch("/api/carData")
 
 function updateTable(showedCars) {
   // console.log("Calling updateTable");
+  document.getElementById("demo").innerHTML = "";
   let text = tableHeadString();
   let table_buffer = "</td><td>";
+  text += "<tbody>";
   for (let i = 0; i < showedCars.length; i++) {
     text += "<tr><td id='tableNameRow" + String(i) + "'>";
     text += showedCars[i]["name"];
@@ -32,34 +44,35 @@ function updateTable(showedCars) {
     text += table_buffer;
     text += formatDate(showedCars[i]["modified"]);
     text += table_buffer;
-    text +=
-      "<button type='button' onclick='deleteRow(" +
-      String(i) +
-      ")'>delete</button>";
+    text += `<button id='deleteRowButton${i}' type='button'>delete</button>`;
     text += table_buffer;
     text +=
-      "<button type='button' onclick='editRow(" +
-      String(i) +
-      ")' id='editButton" +
+      "<button type='button'id='editButton" +
       String(i) +
       "'>edit</button><span id='cancelButton" +
       String(i) +
       "'></span>";
     text += "</td></tr>";
   }
+  text += "</tbody>";
   document.getElementById("demo").innerHTML = text;
+  for (let i = 0; i < showedCars.length; i++) {
+    addOnclickById("deleteRowButton" + i, () => deleteRow(i));
+    addOnclickById("editButton" + i, () => editRow(i));
+  }
+  initiateOnClickArrange();
 }
 
-function onclickArrangeString(property, ID) {
-  return `onclick="hightoLow('${property}', '${ID}')"`;
+function initiateOnClickArrange() {
+  addOnclickById("nameHead", () => hightoLow("name", "nameHead"));
+  addOnclickById("priceHead", () => hightoLow("price", "priceHead"));
+  addOnclickById("yearHead", () => hightoLow("year", "yearHead"));
+  addOnclickById("addHead", () => hightoLow("added", "addHead"));
+  addOnclickById("modifyHead", () => hightoLow("modified", "modifyHead"));
 }
 
-function headString(headName, headId, property) {
-  return (
-    `<th scope='col' id='${headId}' ` +
-    onclickArrangeString(property, headId) +
-    `>${headName}</th>`
-  );
+function headString(headName, headId) {
+  return `<th scope='col' id='${headId}'>${headName}</th>`;
 }
 function tableHeadString() {
   const headingName = headString("Name", "nameHead", "name");
@@ -198,14 +211,12 @@ function changeRowToForm(showedCars, i) {
     tempYear
   );
   document.getElementById("editButton" + i).innerHTML = "update";
-  document
-    .getElementById("editButton" + i)
-    .setAttribute("onclick", "updateData(" + i + ")");
+  addOnclickById("editButton" + i, () => updateData(i));
 
   let tempButton = document.createElement("button");
   tempButton.innerHTML = "cancel";
   tempButton.id = "tempCancelButton";
-  tempButton.setAttribute("onclick", "cancelUpdate(" + i + ")");
+  tempButton.addEventListener("click", () => cancelUpdate(i));
   let tempId = document.getElementById("cancelButton" + i);
   tempId.parentNode.replaceChild(tempButton, tempId);
 }
@@ -249,55 +260,22 @@ function cancelUpdate(i) {
 }
 
 function hightoLow(propName, buttonID) {
-  if (typeof newCars[0][propName] === "string") {
-    newCars.sort((a, b) => {
-      if (a[propName] > b[propName]) {
-        return 1;
-      }
-      if (a[propName] < b[propName]) {
-        return -1;
-      }
-      return 0;
-    });
-  } else if (typeof newCars[0][propName] === "number") {
-    newCars.sort((a, b) => b[propName] - a[propName]);
-  }
+  sortObjectByPropHighToLow(newCars, propName);
 
   //updateTable
   updateTable(newCars);
 
   //change button
-  let tempButton = document.getElementById(buttonID);
-  tempButton.setAttribute("onclick", `lowtoHigh('${propName}', '${buttonID}')`);
+  addOnclickById(buttonID, () => lowtoHigh(propName, buttonID));
 }
 
 function lowtoHigh(propName, buttonID) {
-  if (typeof newCars[0][propName] === "string") {
-    newCars.sort((a, b) => {
-      if (a[propName] < b[propName]) {
-        return 1;
-      }
-      if (a[propName] > b[propName]) {
-        return -1;
-      }
-      return 0;
-    });
-  } else if (typeof newCars[0][propName] === "number") {
-    newCars.sort((a, b) => a[propName] - b[propName]);
-  }
+  sortObjectByPropLowToHigh(newCars, propName);
   //updateTable
   updateTable(newCars);
 
   //change button
-  let tempButton = document.getElementById(buttonID);
-  tempButton.setAttribute("onclick", `hightoLow('${propName}', '${buttonID}')`);
-}
-
-function removeItemFromList(listOfData, item) {
-  let index = listOfData.indexOf(item);
-  if (index !== -1) {
-    listOfData.splice(index, 1);
-  }
+  addOnclickById(buttonID, () => hightoLow(propName, buttonID));
 }
 
 function searchByName() {
@@ -328,9 +306,12 @@ function filterSearch() {
 
 function createFilter(filterWord) {
   filterCounter += 1;
-  const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<input type="button" value="cancel" onclick="deleteElementById('filterWord${filterCounter}')"></div>`;
+  const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<button id="cancel${filterCounter}" type="button">❌</button></div>`;
   filterDict[`filterWord${filterCounter}`] = filterWord;
   document.getElementById("filter").innerHTML += filterTemplate;
+  addOnclickById(`cancel${filterCounter}`, () => {
+    deleteElementById(`filterWord${filterCounter}`);
+  });
 }
 
 function deleteElementById(id) {
@@ -346,22 +327,6 @@ function deleteElementById(id) {
   updateTable(searchedCars);
 }
 
-function htmlMethod(method, data) {
-  return fetch("/api/carData", {
-    method: method, // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(data),
-  });
-}
-
 function addYearOption() {
   const d = new Date();
   let startYear = d.getFullYear();
@@ -373,20 +338,10 @@ function addYearOption() {
   document.getElementById("year").innerHTML = allOptionValue;
 }
 
-function formatDate(date) {
-  const d = new Date(date);
-  return `${timeFormat(d.getDate())}-${timeFormat(
-    d.getMonth() + 1
-  )}-${d.getFullYear()}\n${timeFormat(d.getHours())}:${timeFormat(
-    d.getMinutes()
-  )}:${timeFormat(d.getSeconds())}`;
+function addOnclickById(id, func) {
+  document.getElementById(id).addEventListener("click", func);
 }
 
-function timeFormat(str) {
-  const tStr = String(str);
-  if (tStr.length === 2) return tStr;
-  if (tStr.length === 1) return "0" + tStr;
-}
 // แก้ search field เป็น show filter with cancel button (DONE!)
 // เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
 // แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
