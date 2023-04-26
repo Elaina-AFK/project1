@@ -1,105 +1,57 @@
 import { htmlMethod } from "./utils/api.js";
 import {
-  formatDate,
-  sortObjectByPropHighToLow,
-  sortObjectByPropLowToHigh,
-} from "./utils/utilities.js";
-import {
   addOnclickById,
   changeTextProperty,
   changeRedVerifiedText,
+  mainString,
+  updateTable as updateTableModule,
 } from "./utils/dom.js";
+import { loginPageString } from "./utils/loginPage.js";
 
 let newCars = [];
 let searchedCars = [];
 let stateOfWeb = 0;
+let editState = 0;
 let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
-// add onclick property
-addOnclickById("searchButton", searchByName);
-addOnclickById("submitButton", verifyInput);
 // fetch
+renderBaseOnState();
+
 fetch("/api/carData")
   .then((res) => res.json())
   .then((res) => {
     const cars = res;
     newCars = cars.slice();
+    renderBaseOnState();
+  });
+
+function renderBaseOnState() {
+  if (stateOfWeb === 0) {
+    document.getElementById("mainDiv").innerHTML = loginPageString();
+    addOnclickById("loginButton", onLogin);
+  } else if (stateOfWeb === 1) {
+    document.getElementById("mainDiv").innerHTML = mainString();
 
     // console.log("data: ", newCars);
     updateTable(newCars);
     addYearOption();
-  });
-
-function updateTable(showedCars) {
-  // console.log("Calling updateTable");
-  document.getElementById("demo").innerHTML = "";
-  let text = tableHeadString();
-  let table_buffer = "</td><td>";
-  text += "<tbody>";
-  for (let i = 0; i < showedCars.length; i++) {
-    text += "<tr><td id='tableNameRow" + String(i) + "'>";
-    text += showedCars[i]["name"];
-    text += "</td><td id='tablePriceRow" + String(i) + "'>";
-    text += showedCars[i]["price"];
-    text += "</td><td id='tableYearRow" + String(i) + "'>";
-    text += showedCars[i]["year"];
-    text += table_buffer;
-    text += formatDate(showedCars[i]["added"]);
-    text += table_buffer;
-    text += formatDate(showedCars[i]["modified"]);
-    text += table_buffer;
-    text += `<button id='deleteRowButton${i}' type='button'>delete</button>`;
-    text += table_buffer;
-    text +=
-      "<button type='button'id='editButton" +
-      String(i) +
-      "'>edit</button><span id='cancelButton" +
-      String(i) +
-      "'></span>";
-    text += "</td></tr>";
+    // add onclick property
+    addOnclickById("searchButton", searchByName);
+    addOnclickById("submitButton", verifyInput);
   }
-  text += "</tbody>";
-  document.getElementById("demo").innerHTML = text;
-  for (let i = 0; i < showedCars.length; i++) {
-    addOnclickById("deleteRowButton" + i, () => deleteRow(i));
-    addOnclickById("editButton" + i, () => editRow(i));
-  }
-  initiateOnClickArrange();
 }
 
-function initiateOnClickArrange() {
-  addOnclickById("nameHead", () => hightoLow("name", "nameHead"));
-  addOnclickById("priceHead", () => hightoLow("price", "priceHead"));
-  addOnclickById("yearHead", () => hightoLow("year", "yearHead"));
-  addOnclickById("addHead", () => hightoLow("added", "addHead"));
-  addOnclickById("modifyHead", () => hightoLow("modified", "modifyHead"));
-}
-
-function headString(headName, headId) {
-  return `<th scope='col' id='${headId}'>${headName}</th>`;
-}
-function tableHeadString() {
-  const headingName = headString("Name", "nameHead", "name");
-  const headingPrice = headString("Price", "priceHead", "price");
-  const headingYear = headString("Year", "yearHead", "year");
-  const headingAdd = headString("Added Date", "addHead", "added");
-  const headingModified = headString("Modified Date", "modifyHead", "modified");
-  const editHead = "<th scope='col'></th><th scope='col'></th>";
-  return (
-    "<thead><tr>" +
-    headingName +
-    headingPrice +
-    headingYear +
-    headingAdd +
-    headingModified +
-    editHead +
-    "</tr></thead>"
-  );
+function onLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  // send request (to do)
+  stateOfWeb = 1;
+  renderBaseOnState();
 }
 
 function verifyInput() {
-  if (stateOfWeb == 0) {
+  if (editState == 0) {
     let allName = getNameData();
     let tempName = document.getElementById("name").value;
     let tempPrice = document.getElementById("price").value;
@@ -121,6 +73,10 @@ function verifyInput() {
   } else {
     changeRedVerifiedText("You are in edit mode!");
   }
+}
+
+function updateTable(showedCars) {
+  return updateTableModule(showedCars, editRow, deleteRow);
 }
 
 function getInputfunc() {
@@ -153,7 +109,7 @@ function deleteCarById(showedCars, i) {
 }
 
 function deleteRow(i) {
-  if (stateOfWeb == 0) {
+  if (editState == 0) {
     if (searchedState == 0) {
       deleteCarById(newCars, i);
       updateTable(newCars);
@@ -176,8 +132,8 @@ function getNameData() {
 }
 
 function editRow(i) {
-  if (stateOfWeb === 0) {
-    stateOfWeb = 1;
+  if (editState === 0) {
+    editState = 1;
     if (searchedState === 0) {
       changeRowToForm(newCars, i);
     } else {
@@ -243,7 +199,7 @@ function updateData(i) {
         searchedCars[i].modified = res.modified;
         updateTable(searchedCars);
       }
-      stateOfWeb = 0;
+      editState = 0;
     });
 
   //console.log("back to state 0");
@@ -251,27 +207,8 @@ function updateData(i) {
 
 function cancelUpdate(i) {
   updateTable(newCars);
-  stateOfWeb = 0;
+  editState = 0;
   //console.log("back to state 0");
-}
-
-function hightoLow(propName, buttonID) {
-  sortObjectByPropHighToLow(newCars, propName);
-
-  //updateTable
-  updateTable(newCars);
-
-  //change button
-  addOnclickById(buttonID, () => lowtoHigh(propName, buttonID));
-}
-
-function lowtoHigh(propName, buttonID) {
-  sortObjectByPropLowToHigh(newCars, propName);
-  //updateTable
-  updateTable(newCars);
-
-  //change button
-  addOnclickById(buttonID, () => hightoLow(propName, buttonID));
 }
 
 function searchByName() {
