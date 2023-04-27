@@ -52,9 +52,18 @@ function sortObjectByPropLowToHigh(object, propName) {
   }
 }
 
+function verifiedText(value, elementStr) {
+  if (value === "") {
+    return `This ${elementStr} is empty!`;
+  } else if (value.indexOf(" ") >= 0) {
+    return `This ${elementStr} have spaces!`;
+  }
+}
+
 export {
   formatDate,
   removeItemFromList,
   sortObjectByPropHighToLow,
   sortObjectByPropLowToHigh,
+  verifiedText,
 };

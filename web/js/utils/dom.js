@@ -2,6 +2,7 @@ import {
   formatDate,
   sortObjectByPropHighToLow,
   sortObjectByPropLowToHigh,
+  verifiedText,
 } from "./utilities.js";
 
 function addOnclickById(id, func) {
@@ -122,10 +123,31 @@ function lowtoHigh(showedCars, propName, buttonID) {
   addOnclickById(buttonID, () => hightoLow(showedCars, propName, buttonID));
 }
 
+function verifyCarName(allName, value) {
+  if (allName.includes(value)) {
+    return "This name is duplicated!";
+  }
+  return verifiedText(value, "name");
+}
+
+function verifyPrice(value) {
+  if (isNaN(value)) {
+    return "This price is not a number!";
+  }
+  return verifiedText(value, "price");
+}
+
+function verifyYear(value) {
+  return verifiedText(value, "year");
+}
+
 export {
   addOnclickById,
   changeTextProperty,
   changeRedVerifiedText,
   mainString,
   updateTable,
+  verifyCarName,
+  verifyPrice,
+  verifyYear,
 };

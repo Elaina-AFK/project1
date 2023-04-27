@@ -5,6 +5,8 @@ import {
   changeRedVerifiedText,
   mainString,
   updateTable as updateTableModule,
+  verifyCarName,
+  verifyPrice,
 } from "./utils/dom.js";
 import { loginPageString } from "./utils/loginPage.js";
 
@@ -38,7 +40,7 @@ function renderBaseOnState() {
     addYearOption();
     // add onclick property
     addOnclickById("searchButton", searchByName);
-    addOnclickById("submitButton", verifyInput);
+    addOnclickById("submitButton", verifySubmit);
   }
 }
 
@@ -50,26 +52,21 @@ function onLogin() {
   renderBaseOnState();
 }
 
-function verifyInput() {
+function verifySubmit() {
   if (editState == 0) {
     let allName = getNameData();
     let tempName = document.getElementById("name").value;
     let tempPrice = document.getElementById("price").value;
     let tempYear = document.getElementById("year").value;
-    if (allName.includes(tempName)) {
-      changeRedVerifiedText("This name is duplicated!");
-    } else if (tempName === "" || tempPrice === "") {
-      changeRedVerifiedText("This name or price is empty!");
-    } else if (tempName.indexOf(" ") >= 0 || tempPrice.indexOf(" ") >= 0) {
-      changeRedVerifiedText("This name or price have spaces!");
-    } else if (Number.isNaN(tempPrice) === true) {
-      changeRedVerifiedText("This price is Invalid!");
-    } else if (tempYear === "") {
-      changeRedVerifiedText("Please select the year!");
-    } else {
-      changeTextProperty("verifiedText", "Green", "Success!");
-      getInputfunc();
-    }
+    let verifyString = "";
+    verifyString = verifyCarName(allName, tempName);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    verifyString = verifyPrice(tempPrice);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    verifyString = verifyYear(tempYear);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    changeTextProperty("verifiedText", "Green", "Success!");
+    getInputfunc();
   } else {
     changeRedVerifiedText("You are in edit mode!");
   }
