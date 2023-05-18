@@ -53,7 +53,7 @@ function onLogin() {
 
 function verifySubmit({ name, price, year }) {
   if (editState === 0) {
-    let allName = getNameData();
+    let allName = dom.getNameData(newCars);
     let verifyString = "";
     verifyString = dom.verifyCarName(allName, name.value);
     if (verifyString) return dom.changeRedVerifiedText(verifyString);
@@ -100,15 +100,6 @@ function deleteRow(i) {
   } else {
     dom.changeRedVerifiedText("You are in edit mode!");
   }
-}
-
-function getNameData() {
-  //return Name array
-  let allName = [];
-  for (let i = 0; i < newCars.length; i++) {
-    allName.push(newCars[i]["name"]);
-  }
-  return allName;
 }
 
 function editRow(i) {

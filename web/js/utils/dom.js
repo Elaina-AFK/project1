@@ -165,6 +165,10 @@ function getInputfunc(nameId, priceId, yearId, callBackFn) {
     });
 }
 
+function getNameData(carData) {
+  return carData.map((car) => car["name"]);
+}
+
 export default {
   addOnclickById,
   changeTextProperty,
@@ -176,4 +180,5 @@ export default {
   verifyYear,
   clearInputForm,
   getInputfunc,
+  getNameData,
 };
