@@ -220,17 +220,20 @@ function filterSearch() {
 
 function createFilter(filterWord) {
   filterCounter += 1;
-  const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<button id="cancel${filterCounter}" type="button">❌</button></div>`;
+  // const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<button id="cancel${filterCounter}" type="button">❌</button></div>`;
   filterDict[`filterWord${filterCounter}`] = filterWord;
-  document.getElementById("filter").innerHTML += filterTemplate;
-  dom.addOnclickById(`cancel${filterCounter}`, () => {
-    deleteFilterById(`filterWord${filterCounter}`);
+  const filterNode = createFilterNode(filterWord, filterCounter);
+  document.getElementById("filter").appendChild(filterNode);
+  dom.addOnclickById(`cancel${filterCounter}`, function () {
+    const num = this.id.substring(6);
+    deleteFilter(num);
   });
 }
 
-function deleteFilterById(id) {
+function deleteFilter(num) {
+  const id = `filterWord${num}`;
   delete filterDict[id];
-  document.getElementById(id).remove();
+  document.getElementById(id).outerHTML = "";
   if (document.getElementById("filter").innerHTML.trim() === "") {
     updateTable(newCars);
     searchedState = 0;
@@ -252,10 +255,25 @@ function addYearOption() {
   document.getElementById("year").innerHTML = allOptionValue;
 }
 
+function createFilterNode(filterWord, filterCount) {
+  const divNode = document.createElement("div");
+  divNode.id = `filterWord${filterCount}`;
+  divNode.style.cssText = "display: inline";
+  const labelNode = document.createElement("label");
+  labelNode.innerHTML = filterWord;
+  const buttonNode = document.createElement("button");
+  buttonNode.id = `cancel${filterCount}`;
+  buttonNode.type = "button";
+  buttonNode.innerHTML = "❌";
+  divNode.appendChild(labelNode);
+  divNode.appendChild(buttonNode);
+  return divNode;
+}
+
 // แก้ search field เป็น show filter with cancel button (DONE!)
 // เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
 // แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
 // ทำให้ปีแก้ไขได้ (DONE!)
-// เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย
-// แยกฟังก์ชั่นเป็นโมดูลต่างๆไว้ file อื่นๆ
-// แก้ code ให้เวิร์คจจร้าาา (filter)
+// เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย(DONE!)
+// แยกฟังก์ชั่นเป็นโมดูลต่างๆไว้ file อื่นๆ (on progress)
+// แก้ code ให้เวิร์คจจร้าาา (filter) (Done!)
