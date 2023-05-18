@@ -33,7 +33,7 @@ app.use(
 app.use(express.static("web"));
 
 app.get("/", function (req, res) {
-  res.send("Hello World");
+  res.send("<a href='http://localhost:8081/html/index.html'>car project</a>");
 });
 
 app.get("/api/carData", function (req, res) {

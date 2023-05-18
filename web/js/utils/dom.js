@@ -1,9 +1,5 @@
-import {
-  formatDate,
-  sortObjectByPropHighToLow,
-  sortObjectByPropLowToHigh,
-  verifiedText,
-} from "./utilities.js";
+import utilities from "./utilities.js";
+import api from "./api.js";
 
 function addOnclickById(id, func) {
   document.getElementById(id).addEventListener("click", func);
@@ -17,19 +13,19 @@ function changeRedVerifiedText(text) {
 }
 
 function mainString() {
-  return `<h2>Cars Table 🚘</h2>
-  <form>
+  return `<h2 class="middle">Cars Table 🚘</h2>
+  <form class="center">
       <input type="text" id="searchBar" placeholder="Search by Name">
-      <input id="searchButton" type="button" value="search">
+      <input id="searchButton" type="button" value="search" class="button">
       <div id="filter"></div>
   </form>
-  <table id="demo" class="table table-striped table-bordered table-hover table-dark"></table><br><br><br>
+  <table id="demo" class="table table-striped table-bordered table-hover table-dark"></table>
   <p id="verifiedText" style="color: Red;"></p>
-  <form>
-      <label for="name">Name: </label><input type="text" id="name"><br>
-      <label for="price">Price: </label><input type="text" id="price"><br>
-      <label for="year">Year: </label><select id="year" name="year"></select><br>
-      <input id="submitButton" type="button" value="Submit">
+  <form class="center">
+      <label for="name">Name: </label><input type="text" id="name">
+      <label for="price">Price: </label><input type="text" id="price">
+      <label for="year">Year: </label><select id="year" name="year"></select>
+      <input id="submitButton" type="button" value="Submit" class="button">
   </form>`;
 }
 
@@ -42,7 +38,8 @@ function tableHeadString() {
   const headingYear = headString("Year", "yearHead", "year");
   const headingAdd = headString("Added Date", "addHead", "added");
   const headingModified = headString("Modified Date", "modifyHead", "modified");
-  const editHead = "<th scope='col'></th><th scope='col'></th>";
+  const editHead =
+    "<th scope='col' class='no-hover'></th><th scope='col' class='no-hover'></th>";
   return (
     "<thead><tr>" +
     headingName +
@@ -69,9 +66,9 @@ function updateTable(showedCars, editRow, deleteRow) {
     text += "</td><td id='tableYearRow" + String(i) + "'>";
     text += showedCars[i]["year"];
     text += table_buffer;
-    text += formatDate(showedCars[i]["added"]);
+    text += utilities.formatDate(showedCars[i]["added"]);
     text += table_buffer;
-    text += formatDate(showedCars[i]["modified"]);
+    text += utilities.formatDate(showedCars[i]["modified"]);
     text += table_buffer;
     text += `<button id='deleteRowButton${i}' type='button'>delete</button>`;
     text += table_buffer;
@@ -105,7 +102,7 @@ function initiateOnClickArrange(showedCars) {
 }
 
 function hightoLow(showedCars, propName, buttonID) {
-  sortObjectByPropHighToLow(showedCars, propName);
+  utilities.sortObjectByPropHighToLow(showedCars, propName);
 
   //updateTable
   updateTable(showedCars);
@@ -115,7 +112,7 @@ function hightoLow(showedCars, propName, buttonID) {
 }
 
 function lowtoHigh(showedCars, propName, buttonID) {
-  sortObjectByPropLowToHigh(showedCars, propName);
+  utilities.sortObjectByPropLowToHigh(showedCars, propName);
   //updateTable
   updateTable(showedCars);
 
@@ -127,21 +124,48 @@ function verifyCarName(allName, value) {
   if (allName.includes(value)) {
     return "This name is duplicated!";
   }
-  return verifiedText(value, "name");
+  return utilities.verifiedText(value, "name");
 }
 
 function verifyPrice(value) {
   if (isNaN(value)) {
     return "This price is not a number!";
   }
-  return verifiedText(value, "price");
+  return utilities.verifiedText(value, "price");
 }
 
 function verifyYear(value) {
-  return verifiedText(value, "year");
+  return utilities.verifiedText(value, "year");
 }
 
-export {
+function clearInputForm(nameId, priceId, yearId) {
+  nameId.value = "";
+  priceId.value = "";
+  yearId.value = "2023";
+}
+
+function getInputfunc(nameId, priceId, yearId, callBackFn) {
+  const temp = {
+    name: nameId.value,
+    price: priceId.value,
+    year: yearId.value,
+  };
+  const response = api
+    .htmlMethod("POST", temp)
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res.message);
+      const newData = {
+        ...temp,
+        id: res.id,
+        added: res.added,
+        modified: res.modified,
+      };
+      callBackFn(newData);
+    });
+}
+
+export default {
   addOnclickById,
   changeTextProperty,
   changeRedVerifiedText,
@@ -150,4 +174,6 @@ export {
   verifyCarName,
   verifyPrice,
   verifyYear,
+  clearInputForm,
+  getInputfunc,
 };

@@ -60,7 +60,7 @@ function verifiedText(value, elementStr) {
   }
 }
 
-export {
+export default {
   formatDate,
   removeItemFromList,
   sortObjectByPropHighToLow,

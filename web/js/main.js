@@ -1,14 +1,6 @@
-import { htmlMethod } from "./utils/api.js";
-import {
-  addOnclickById,
-  changeTextProperty,
-  changeRedVerifiedText,
-  mainString,
-  updateTable as updateTableModule,
-  verifyCarName,
-  verifyPrice,
-} from "./utils/dom.js";
-import { loginPageString } from "./utils/loginPage.js";
+import api from "./utils/api.js";
+import dom from "./utils/dom.js";
+import loginPage from "./utils/loginPage.js";
 
 let newCars = [];
 let searchedCars = [];
@@ -30,17 +22,24 @@ fetch("/api/carData")
 
 function renderBaseOnState() {
   if (stateOfWeb === 0) {
-    document.getElementById("mainDiv").innerHTML = loginPageString();
-    addOnclickById("loginButton", onLogin);
+    document.getElementById("mainDiv").innerHTML = loginPage.loginPageString();
+    dom.addOnclickById("loginButton", onLogin);
   } else if (stateOfWeb === 1) {
-    document.getElementById("mainDiv").innerHTML = mainString();
+    document.getElementById("mainDiv").innerHTML = dom.mainString();
 
     // console.log("data: ", newCars);
     updateTable(newCars);
     addYearOption();
     // add onclick property
-    addOnclickById("searchButton", searchByName);
-    addOnclickById("submitButton", verifySubmit);
+    dom.addOnclickById("searchButton", searchByName);
+    dom.addOnclickById("submitButton", () => {
+      const fieldValue = {
+        name: document.getElementById("name"),
+        price: document.getElementById("price"),
+        year: document.getElementById("year"),
+      };
+      verifySubmit(fieldValue);
+    });
   }
 }
 
@@ -52,51 +51,35 @@ function onLogin() {
   renderBaseOnState();
 }
 
-function verifySubmit() {
-  if (editState == 0) {
+function verifySubmit({ name, price, year }) {
+  if (editState === 0) {
     let allName = getNameData();
-    let tempName = document.getElementById("name").value;
-    let tempPrice = document.getElementById("price").value;
-    let tempYear = document.getElementById("year").value;
     let verifyString = "";
-    verifyString = verifyCarName(allName, tempName);
-    if (verifyString) return changeRedVerifiedText(verifyString);
-    verifyString = verifyPrice(tempPrice);
-    if (verifyString) return changeRedVerifiedText(verifyString);
-    verifyString = verifyYear(tempYear);
-    if (verifyString) return changeRedVerifiedText(verifyString);
-    changeTextProperty("verifiedText", "Green", "Success!");
-    getInputfunc();
+    verifyString = dom.verifyCarName(allName, name.value);
+    if (verifyString) return dom.changeRedVerifiedText(verifyString);
+    verifyString = dom.verifyPrice(price.value);
+    if (verifyString) return dom.changeRedVerifiedText(verifyString);
+    verifyString = dom.verifyYear(year.value);
+    if (verifyString) return dom.changeRedVerifiedText(verifyString);
+    dom.changeTextProperty("verifiedText", "Green", "Success!");
+    dom.getInputfunc(name, price, year, (newData) => {
+      newCars.push(newData);
+      updateTable(newCars);
+      dom.clearInputForm(name, price, year);
+    });
   } else {
-    changeRedVerifiedText("You are in edit mode!");
+    dom.changeRedVerifiedText("You are in edit mode!");
   }
 }
 
 function updateTable(showedCars) {
-  return updateTableModule(showedCars, editRow, deleteRow);
-}
-
-function getInputfunc() {
-  let name = document.getElementById("name").value;
-  let price = document.getElementById("price").value;
-  let year = document.getElementById("year").value;
-  let temp = { name: name, price: price, year: year };
-  const response = htmlMethod("POST", temp)
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res.message);
-      temp = { ...temp, id: res.id, added: res.added, modified: res.modified };
-      newCars.push(temp);
-      updateTable(newCars);
-      document.getElementById("name").value = "";
-      document.getElementById("price").value = "";
-      document.getElementById("year").value = "";
-    });
+  return dom.updateTable(showedCars, editRow, deleteRow);
 }
 
 function deleteCarById(showedCars, i) {
   const tempData = { id: showedCars[i]["id"] };
-  const response = htmlMethod("DELETE", tempData)
+  const response = api
+    .htmlMethod("DELETE", tempData)
     .then((res) => res.json())
     .then((message) => {
       console.log(message.message);
@@ -115,7 +98,7 @@ function deleteRow(i) {
       updateTable(searchedCars);
     }
   } else {
-    changeRedVerifiedText("You are in edit mode!");
+    dom.changeRedVerifiedText("You are in edit mode!");
   }
 }
 
@@ -160,7 +143,7 @@ function changeRowToForm(showedCars, i) {
     tempYear
   );
   document.getElementById("editButton" + i).innerHTML = "update";
-  addOnclickById("editButton" + i, () => updateData(i));
+  dom.addOnclickById("editButton" + i, () => updateData(i));
 
   let tempButton = document.createElement("button");
   tempButton.innerHTML = "cancel";
@@ -185,7 +168,8 @@ function updateData(i) {
     newCars[ind] = { ...newCars[ind], ...temp };
     tempData = searchedCars[i];
   }
-  const response = htmlMethod("PUT", tempData)
+  const response = api
+    .htmlMethod("PUT", tempData)
     .then((res) => res.json())
     .then((res) => {
       console.log(res.message);
@@ -202,7 +186,7 @@ function updateData(i) {
   //console.log("back to state 0");
 }
 
-function cancelUpdate(i) {
+function cancelUpdate() {
   updateTable(newCars);
   editState = 0;
   //console.log("back to state 0");
@@ -239,14 +223,14 @@ function createFilter(filterWord) {
   const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<button id="cancel${filterCounter}" type="button">❌</button></div>`;
   filterDict[`filterWord${filterCounter}`] = filterWord;
   document.getElementById("filter").innerHTML += filterTemplate;
-  addOnclickById(`cancel${filterCounter}`, () => {
+  dom.addOnclickById(`cancel${filterCounter}`, () => {
     deleteFilterById(`filterWord${filterCounter}`);
   });
 }
 
 function deleteFilterById(id) {
   delete filterDict[id];
-  document.getElementById(id).outerHTML = "";
+  document.getElementById(id).remove();
   if (document.getElementById("filter").innerHTML.trim() === "") {
     updateTable(newCars);
     searchedState = 0;
@@ -274,3 +258,4 @@ function addYearOption() {
 // ทำให้ปีแก้ไขได้ (DONE!)
 // เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย
 // แยกฟังก์ชั่นเป็นโมดูลต่างๆไว้ file อื่นๆ
+// แก้ code ให้เวิร์คจจร้าาา (filter)

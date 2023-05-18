@@ -14,4 +14,4 @@ function htmlMethod(method, data, path = "/api/carData") {
   });
 }
 
-export { htmlMethod };
+export default { htmlMethod };
