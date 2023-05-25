@@ -169,6 +169,92 @@ function getNameData(carData) {
   return carData.map((car) => car["name"]);
 }
 
+function createFilterNode(filterWord, filterCount) {
+  const divNode = document.createElement("div");
+  divNode.id = `filterWord${filterCount}`;
+  divNode.style.cssText = "display: inline";
+  const labelNode = document.createElement("label");
+  labelNode.innerHTML = filterWord;
+  const buttonNode = document.createElement("button");
+  buttonNode.id = `cancel${filterCount}`;
+  buttonNode.type = "button";
+  buttonNode.innerHTML = "❌";
+  divNode.appendChild(labelNode);
+  divNode.appendChild(buttonNode);
+  return divNode;
+}
+
+function verifySubmit({ name, price, year }, editState, carData, callBackFn) {
+  if (editState === 0) {
+    let allName = getNameData(carData);
+    let verifyString = "";
+    verifyString = verifyCarName(allName, name.value);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    verifyString = verifyPrice(price.value);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    verifyString = verifyYear(year.value);
+    if (verifyString) return changeRedVerifiedText(verifyString);
+    changeTextProperty("verifiedText", "Green", "Success!");
+    getInputfunc(name, price, year, callBackFn);
+    clearInputForm(name, price, year);
+  } else {
+    changeRedVerifiedText("You are in edit mode!");
+  }
+}
+
+function deleteCarById(showedCars, i) {
+  const tempData = { id: showedCars[i]["id"] };
+  const response = api
+    .htmlMethod("DELETE", tempData)
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res.message);
+    });
+  return tempData.id;
+}
+
+function toFormString(idName, variableName) {
+  return `<form><input type='text' id='${idName}' value='${variableName}'></form>`;
+}
+
+function changeRowToForm(showedCars, i, updateDataFn, cancelUpdateFn) {
+  let tempName = showedCars[i]["name"];
+  let tempPrice = showedCars[i]["price"];
+  let tempYear = showedCars[i]["year"];
+  document.getElementById("tableNameRow" + String(i)).innerHTML = toFormString(
+    "nameEdit",
+    tempName
+  );
+  document.getElementById("tablePriceRow" + String(i)).innerHTML = toFormString(
+    "priceEdit",
+    tempPrice
+  );
+  document.getElementById("tableYearRow" + String(i)).innerHTML = toFormString(
+    "yearEdit",
+    tempYear
+  );
+  document.getElementById("editButton" + i).innerHTML = "update";
+  addOnclickById("editButton" + i, () => updateDataFn(i));
+
+  let tempButton = document.createElement("button");
+  tempButton.innerHTML = "cancel";
+  tempButton.id = "tempCancelButton";
+  tempButton.addEventListener("click", () => cancelUpdateFn());
+  let tempId = document.getElementById("cancelButton" + i);
+  tempId.parentNode.replaceChild(tempButton, tempId);
+}
+
+function addYearOption() {
+  const d = new Date();
+  let startYear = d.getFullYear();
+  let allOptionValue = "";
+  while (startYear >= 1900) {
+    allOptionValue += `<option value="${startYear}">${startYear}</option>`;
+    startYear -= 1;
+  }
+  document.getElementById("year").innerHTML = allOptionValue;
+}
+
 export default {
   addOnclickById,
   changeTextProperty,
@@ -181,4 +267,9 @@ export default {
   clearInputForm,
   getInputfunc,
   getNameData,
+  createFilterNode,
+  verifySubmit,
+  deleteCarById,
+  changeRowToForm,
+  addYearOption,
 };

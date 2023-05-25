@@ -29,7 +29,7 @@ function renderBaseOnState() {
 
     // console.log("data: ", newCars);
     updateTable(newCars);
-    addYearOption();
+    dom.addYearOption();
     // add onclick property
     dom.addOnclickById("searchButton", searchByName);
     dom.addOnclickById("submitButton", () => {
@@ -38,7 +38,10 @@ function renderBaseOnState() {
         price: document.getElementById("price"),
         year: document.getElementById("year"),
       };
-      verifySubmit(fieldValue);
+      dom.verifySubmit(fieldValue, editState, newCars, (newData) => {
+        newCars.push(newData);
+        updateTable(newCars);
+      });
     });
   }
 }
@@ -51,50 +54,24 @@ function onLogin() {
   renderBaseOnState();
 }
 
-function verifySubmit({ name, price, year }) {
-  if (editState === 0) {
-    let allName = dom.getNameData(newCars);
-    let verifyString = "";
-    verifyString = dom.verifyCarName(allName, name.value);
-    if (verifyString) return dom.changeRedVerifiedText(verifyString);
-    verifyString = dom.verifyPrice(price.value);
-    if (verifyString) return dom.changeRedVerifiedText(verifyString);
-    verifyString = dom.verifyYear(year.value);
-    if (verifyString) return dom.changeRedVerifiedText(verifyString);
-    dom.changeTextProperty("verifiedText", "Green", "Success!");
-    dom.getInputfunc(name, price, year, (newData) => {
-      newCars.push(newData);
-      updateTable(newCars);
-      dom.clearInputForm(name, price, year);
-    });
-  } else {
-    dom.changeRedVerifiedText("You are in edit mode!");
-  }
-}
-
 function updateTable(showedCars) {
   return dom.updateTable(showedCars, editRow, deleteRow);
 }
 
-function deleteCarById(showedCars, i) {
-  const tempData = { id: showedCars[i]["id"] };
-  const response = api
-    .htmlMethod("DELETE", tempData)
-    .then((res) => res.json())
-    .then((message) => {
-      console.log(message.message);
-    });
-  newCars = newCars.filter((car) => car.id !== tempData["id"]);
-  searchedCars = searchedCars.filter((car) => car.id !== tempData["id"]);
+function removeAllCarById(id) {
+  newCars = newCars.filter((car) => car.id !== id);
+  searchedCars = searchedCars.filter((car) => car.id !== id);
 }
 
 function deleteRow(i) {
   if (editState == 0) {
     if (searchedState == 0) {
-      deleteCarById(newCars, i);
+      const id = dom.deleteCarById(newCars, i);
+      removeAllCarById(id);
       updateTable(newCars);
     } else {
-      deleteCarById(searchedCars, i);
+      const id = dom.deleteCarById(searchedCars, i);
+      removeAllCarById(id);
       updateTable(searchedCars);
     }
   } else {
@@ -102,46 +79,19 @@ function deleteRow(i) {
   }
 }
 
+function changeRowToFormMain(showedCars, i) {
+  return dom.changeRowToForm(showedCars, i, updateData, cancelUpdate);
+}
+
 function editRow(i) {
   if (editState === 0) {
     editState = 1;
     if (searchedState === 0) {
-      changeRowToForm(newCars, i);
+      changeRowToFormMain(newCars, i);
     } else {
-      changeRowToForm(searchedCars, i);
+      changeRowToFormMain(searchedCars, i);
     }
   }
-}
-
-function toFormString(idName, variableName) {
-  return `<form><input type='text' id='${idName}' value='${variableName}'></form>`;
-}
-
-function changeRowToForm(showedCars, i) {
-  let tempName = showedCars[i]["name"];
-  let tempPrice = showedCars[i]["price"];
-  let tempYear = showedCars[i]["year"];
-  document.getElementById("tableNameRow" + String(i)).innerHTML = toFormString(
-    "nameEdit",
-    tempName
-  );
-  document.getElementById("tablePriceRow" + String(i)).innerHTML = toFormString(
-    "priceEdit",
-    tempPrice
-  );
-  document.getElementById("tableYearRow" + String(i)).innerHTML = toFormString(
-    "yearEdit",
-    tempYear
-  );
-  document.getElementById("editButton" + i).innerHTML = "update";
-  dom.addOnclickById("editButton" + i, () => updateData(i));
-
-  let tempButton = document.createElement("button");
-  tempButton.innerHTML = "cancel";
-  tempButton.id = "tempCancelButton";
-  tempButton.addEventListener("click", () => cancelUpdate(i));
-  let tempId = document.getElementById("cancelButton" + i);
-  tempId.parentNode.replaceChild(tempButton, tempId);
 }
 
 function updateData(i) {
@@ -180,7 +130,6 @@ function updateData(i) {
 function cancelUpdate() {
   updateTable(newCars);
   editState = 0;
-  //console.log("back to state 0");
 }
 
 function searchByName() {
@@ -211,9 +160,8 @@ function filterSearch() {
 
 function createFilter(filterWord) {
   filterCounter += 1;
-  // const filterTemplate = `<div id='filterWord${filterCounter}' style='display:inline'>${filterWord}<button id="cancel${filterCounter}" type="button">❌</button></div>`;
   filterDict[`filterWord${filterCounter}`] = filterWord;
-  const filterNode = createFilterNode(filterWord, filterCounter);
+  const filterNode = dom.createFilterNode(filterWord, filterCounter);
   document.getElementById("filter").appendChild(filterNode);
   dom.addOnclickById(`cancel${filterCounter}`, function () {
     const num = this.id.substring(6);
@@ -233,32 +181,6 @@ function deleteFilter(num) {
   }
   filterSearch();
   updateTable(searchedCars);
-}
-
-function addYearOption() {
-  const d = new Date();
-  let startYear = d.getFullYear();
-  let allOptionValue = "";
-  while (startYear >= 1900) {
-    allOptionValue += `<option value="${startYear}">${startYear}</option>`;
-    startYear -= 1;
-  }
-  document.getElementById("year").innerHTML = allOptionValue;
-}
-
-function createFilterNode(filterWord, filterCount) {
-  const divNode = document.createElement("div");
-  divNode.id = `filterWord${filterCount}`;
-  divNode.style.cssText = "display: inline";
-  const labelNode = document.createElement("label");
-  labelNode.innerHTML = filterWord;
-  const buttonNode = document.createElement("button");
-  buttonNode.id = `cancel${filterCount}`;
-  buttonNode.type = "button";
-  buttonNode.innerHTML = "❌";
-  divNode.appendChild(labelNode);
-  divNode.appendChild(buttonNode);
-  return divNode;
 }
 
 // แก้ search field เป็น show filter with cancel button (DONE!)
