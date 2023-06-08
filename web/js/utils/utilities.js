@@ -9,8 +9,7 @@ function formatDate(date) {
 
 function timeFormat(str) {
   const tStr = String(str);
-  if (tStr.length === 2) return tStr;
-  if (tStr.length === 1) return "0" + tStr;
+  return tStr.length === 1 ? "0" + tStr : tStr;
 }
 
 function removeItemFromList(listOfData, item) {
@@ -22,15 +21,7 @@ function removeItemFromList(listOfData, item) {
 
 function sortObjectByPropHighToLow(object, propName) {
   if (typeof object[0][propName] === "string") {
-    object.sort((a, b) => {
-      if (a[propName] > b[propName]) {
-        return 1;
-      }
-      if (a[propName] < b[propName]) {
-        return -1;
-      }
-      return 0;
-    });
+    object.sort((a, b) => a[propName].localeCompare(b[propName]));
   } else if (typeof object[0][propName] === "number") {
     object.sort((a, b) => b[propName] - a[propName]);
   }
@@ -38,15 +29,7 @@ function sortObjectByPropHighToLow(object, propName) {
 
 function sortObjectByPropLowToHigh(object, propName) {
   if (typeof object[0][propName] === "string") {
-    object.sort((a, b) => {
-      if (a[propName] < b[propName]) {
-        return 1;
-      }
-      if (a[propName] > b[propName]) {
-        return -1;
-      }
-      return 0;
-    });
+    object.sort((a, b) => b[propName].localeCompare(a[propName]));
   } else if (typeof object[0][propName] === "number") {
     object.sort((a, b) => a[propName] - b[propName]);
   }

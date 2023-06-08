@@ -32,4 +32,24 @@ function createElementWithId(nodetype, id) {
   return node;
 }
 
-export default { loginPageNode };
+function themeTogglerNode() {
+  const node = createElementWithId("div", "themeToggler");
+  node.addEventListener("click", () => {
+    const mainDiv = document.getElementById("mainDiv");
+    if (mainDiv.style.getPropertyValue("--base-color") === "#222831") {
+      changeThemeColor(mainDiv, "#404258", "#474E68", "#50577A", "#6B728E");
+    } else {
+      changeThemeColor(mainDiv, "#222831", "#393e46", "#00adb5", "#eeeeee");
+    }
+  });
+  return node;
+}
+
+function changeThemeColor(element, main, sec, ter, qua) {
+  mainDiv.style.setProperty("--base-color", main);
+  mainDiv.style.setProperty("--secondary-color", sec);
+  mainDiv.style.setProperty("--tertiary-color", ter);
+  mainDiv.style.setProperty("--quaternary-color", qua);
+}
+
+export default { loginPageNode, themeTogglerNode };

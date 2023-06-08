@@ -10,8 +10,6 @@ let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
 // fetch
-renderBaseOnState(stateOfWeb);
-
 fetch("/api/carData")
   .then((res) => res.json())
   .then((res) => {
@@ -21,12 +19,16 @@ fetch("/api/carData")
   });
 
 function renderBaseOnState(state) {
+  const mainDivNode = document.getElementById("mainDiv");
   if (state === 0) {
-    document.getElementById("mainDiv").innerHTML = "";
-    document.getElementById("mainDiv").appendChild(loginPage.loginPageNode());
+    mainDivNode.innerHTML = "";
+    mainDivNode.appendChild(loginPage.themeTogglerNode());
+    mainDivNode.appendChild(loginPage.loginPageNode());
     document.getElementById("loginForm").onsubmit = onLogin;
   } else if (state === 1) {
-    document.getElementById("mainDiv").innerHTML = dom.mainString();
+    mainDivNode.innerHTML = dom.mainString();
+    const parent = mainDivNode;
+    parent.insertBefore(loginPage.themeTogglerNode(), mainDivNode.firstChild);
 
     // console.log("data: ", newCars);
     updateTable(newCars);
