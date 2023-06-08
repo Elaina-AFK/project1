@@ -10,21 +10,22 @@ let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
 // fetch
-renderBaseOnState();
+renderBaseOnState(stateOfWeb);
 
 fetch("/api/carData")
   .then((res) => res.json())
   .then((res) => {
     const cars = res;
     newCars = cars.slice();
-    renderBaseOnState();
+    renderBaseOnState(stateOfWeb);
   });
 
-function renderBaseOnState() {
-  if (stateOfWeb === 0) {
-    document.getElementById("mainDiv").innerHTML = loginPage.loginPageString();
-    dom.addOnclickById("loginButton", onLogin);
-  } else if (stateOfWeb === 1) {
+function renderBaseOnState(state) {
+  if (state === 0) {
+    document.getElementById("mainDiv").innerHTML = "";
+    document.getElementById("mainDiv").appendChild(loginPage.loginPageNode());
+    document.getElementById("loginForm").onsubmit = onLogin;
+  } else if (state === 1) {
     document.getElementById("mainDiv").innerHTML = dom.mainString();
 
     // console.log("data: ", newCars);
@@ -51,7 +52,7 @@ function onLogin() {
   const password = document.getElementById("password").value;
   // send request (to do)
   stateOfWeb = 1;
-  renderBaseOnState();
+  renderBaseOnState(stateOfWeb);
 }
 
 function updateTable(showedCars) {
