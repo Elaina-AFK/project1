@@ -1,5 +1,5 @@
 function loginPageNode() {
-  console.log("get called!");
+  // console.log("get called!");
   const form = createElementWithId("form", "loginForm");
   const username = createLabelFor("username", "Username: ");
   const userField = createElementWithId("input", "username");
@@ -32,6 +32,8 @@ function createElementWithId(nodetype, id) {
   return node;
 }
 
+// for myCss.css
+/*
 function themeTogglerNode() {
   const node = createElementWithId("div", "themeToggler");
   node.addEventListener("click", () => {
@@ -51,5 +53,6 @@ function changeThemeColor(element, main, sec, ter, qua) {
   mainDiv.style.setProperty("--tertiary-color", ter);
   mainDiv.style.setProperty("--quaternary-color", qua);
 }
+*/
 
-export default { loginPageNode, themeTogglerNode };
+export default { loginPageNode };

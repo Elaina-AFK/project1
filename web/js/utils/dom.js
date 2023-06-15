@@ -13,7 +13,7 @@ function changeRedVerifiedText(text) {
 }
 
 function mainString() {
-  return `<h2 class="middle">Cars Table 🚘</h2>
+  return `<h2>Cars Table 🚘</h2>
   <form class="center">
       <input type="text" id="searchBar" placeholder="Search by Name">
       <input id="searchButton" type="button" value="search" class="button">
@@ -25,7 +25,7 @@ function mainString() {
       <label for="name">Name: </label><input type="text" id="name">
       <label for="price">Price: </label><input type="text" id="price">
       <label for="year">Year: </label><select id="year" name="year"></select>
-      <input id="submitButton" type="button" value="Submit" class="button">
+      <input id="submitButton" type="button" value="Submit" class="button center-god">
   </form>`;
 }
 

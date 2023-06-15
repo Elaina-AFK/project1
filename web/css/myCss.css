@@ -89,7 +89,7 @@ form.center input,select {
     /* color: var(--tertiary-color); */
 }
 
-.middle {
+h2 {
     display: grid;
     place-items: center;
 }

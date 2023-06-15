@@ -22,13 +22,15 @@ function renderBaseOnState(state) {
   const mainDivNode = document.getElementById("mainDiv");
   if (state === 0) {
     mainDivNode.innerHTML = "";
-    mainDivNode.appendChild(loginPage.themeTogglerNode());
+    //themeToggler myCss.css
+    // mainDivNode.appendChild(loginPage.themeTogglerNode());
     mainDivNode.appendChild(loginPage.loginPageNode());
     document.getElementById("loginForm").onsubmit = onLogin;
   } else if (state === 1) {
     mainDivNode.innerHTML = dom.mainString();
-    const parent = mainDivNode;
-    parent.insertBefore(loginPage.themeTogglerNode(), mainDivNode.firstChild);
+    // themeToggler myCss.css
+    // const parent = mainDivNode;
+    // parent.insertBefore(loginPage.themeTogglerNode(), mainDivNode.firstChild);
 
     // console.log("data: ", newCars);
     updateTable(newCars);

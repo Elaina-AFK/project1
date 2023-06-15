@@ -1,0 +1,107 @@
+:root {
+    --base-color: #E0BBE4;
+    --secondary-color: #957DAD;
+    --tertiary-color: #D291BC;
+    --quaternary-color: #FEC8D8;
+    --fifth-color: #FFDFD3;
+    --white: #FFFFFF;
+    --black: #000000;
+}
+
+body {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 5px;
+    background-color: var(--base-color);
+    color: var(--black);
+}
+
+.table thead th {
+    background-color: var(--base-color);
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.table thead th:hover {
+    background-color: var(--tertiary-color);
+    color: var(--white);
+}
+
+.table .no-hover:hover{
+    background-color: var(--base-color);
+}
+
+.table tbody td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    background-color: var(--fifth-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--quaternary-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--tertiary-color);
+    color: var(--white);
+}
+
+.table tbody button {
+    background-color: var(--base-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.table-hover tbody button:hover {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+h2 {
+    display: grid;
+    place-items: center;
+}
+
+form.center {
+    display: grid;
+    column-gap: 1rem;
+    justify-items: center;
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
+}
+
+form.center input,select {
+    width: 100%;
+    border: 1px solid var(--white);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+.button {
+    background-color: var(--base-color);
+    color: var(--black);
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.button:hover {
+    background-color: var(--tertiary-color);
+    color: var(--white);
+}
+
+.center-god {
+    position: relative;
+    left: 50%;
+}
