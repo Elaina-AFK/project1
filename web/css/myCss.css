@@ -86,7 +86,7 @@ form.center input,select {
 
 .table-hover tbody button:hover {
     background-color: var(--quaternary-color);
-    /* color: var(--tertiary-color); */
+    color: var(--tertiary-color);
 }
 
 h2 {
@@ -102,7 +102,7 @@ h2 {
 
 .button:hover {
     background-color: var(--quaternary-color);
-    /* color: var(--tertiary-color); */
+    color: var(--tertiary-color);
 }
 
 #submitButton {

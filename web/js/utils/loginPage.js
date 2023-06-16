@@ -32,27 +32,50 @@ function createElementWithId(nodetype, id) {
   return node;
 }
 
-// for myCss.css
-/*
 function themeTogglerNode() {
   const node = createElementWithId("div", "themeToggler");
+  themeHover(node);
   node.addEventListener("click", () => {
-    const mainDiv = document.getElementById("mainDiv");
-    if (mainDiv.style.getPropertyValue("--base-color") === "#222831") {
-      changeThemeColor(mainDiv, "#404258", "#474E68", "#50577A", "#6B728E");
-    } else {
-      changeThemeColor(mainDiv, "#222831", "#393e46", "#00adb5", "#eeeeee");
-    }
+    switchCss();
+    themeHover(node);
   });
   return node;
 }
 
-function changeThemeColor(element, main, sec, ter, qua) {
-  mainDiv.style.setProperty("--base-color", main);
-  mainDiv.style.setProperty("--secondary-color", sec);
-  mainDiv.style.setProperty("--tertiary-color", ter);
-  mainDiv.style.setProperty("--quaternary-color", qua);
-}
-*/
+function switchCss() {
+  const css1 = document.getElementById("css1");
+  const css2 = document.getElementById("css2");
 
-export default { loginPageNode };
+  if (css1.disabled) {
+    css1.disabled = false;
+    css2.disabled = true;
+  } else {
+    css1.disabled = true;
+    css2.disabled = false;
+  }
+}
+
+function themeHover(themeNode) {
+  const base = getComputedStyle(document.body).getPropertyValue(
+    "--tertiary-color"
+  );
+  const css1 = "#D291BC";
+  const css2 = "#00adb5";
+
+  if (base === css1) {
+    themeNode.addEventListener("mouseover", () => {
+      themeNode.style.backgroundColor = css2;
+    });
+    themeNode.addEventListener("mouseout", () => {
+      themeNode.style.backgroundColor = css1;
+    });
+  } else if (base === css2) {
+    themeNode.addEventListener("mouseover", () => {
+      themeNode.style.backgroundColor = css1;
+    });
+    themeNode.addEventListener("mouseout", () => {
+      themeNode.style.backgroundColor = css2;
+    });
+  }
+}
+export default { loginPageNode, themeTogglerNode };
