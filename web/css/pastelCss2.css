@@ -1,0 +1,16 @@
+@import url('pastelCss.css');
+:root {
+    --base-color: #CDB4DB;
+    --secondary-color: #FFC8DD;
+    --tertiary-color: #FFAFCC;
+    --quaternary-color: #BDE0FE;
+    --fifth-color: #A2D2FF;
+}
+
+body {
+    color: var(--black);
+}
+
+.table tbody tr:hover {
+    color: var(--black);
+}

@@ -1,3 +1,5 @@
+@import url('themeToggler.css');
+
 :root {
     --base-color: #E0BBE4;
     --secondary-color: #957DAD;
@@ -105,13 +107,3 @@ form.center input,select {
     position: relative;
     left: 50%;
 }
-
-#themeToggler {
-    height: 25px;
-    width: 25px;
-    background-color: var(--tertiary-color);
-    border-radius: 50%;
-    display: inline-block;
-    position: fixed;
-    right: 10px;
-  }
