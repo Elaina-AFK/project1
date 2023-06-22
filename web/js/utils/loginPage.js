@@ -1,4 +1,6 @@
-function loginPageNode() {
+import api from "./api.js";
+
+function loginPageNode(callbackFn) {
   // console.log("get called!");
   const form = createElementWithId("form", "loginForm");
   const username = createLabelFor("username", "Username: ");
@@ -15,7 +17,28 @@ function loginPageNode() {
   form.appendChild(passField);
   form.appendChild(submit);
 
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    verifying(callbackFn);
+  });
+
   return form;
+}
+
+function verifying(callbackFn) {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const loginData = {
+    username,
+    password,
+  };
+  api
+    .htmlMethod("POST", loginData, "/api/loginData")
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res.message);
+      callbackFn();
+    });
 }
 
 function createLabelFor(forName, value) {

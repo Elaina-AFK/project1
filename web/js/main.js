@@ -24,8 +24,7 @@ function renderBaseOnState(state) {
     mainDivNode.innerHTML = "";
     //themeToggler
     mainDivNode.appendChild(loginPage.themeTogglerNode());
-    mainDivNode.appendChild(loginPage.loginPageNode());
-    document.getElementById("loginForm").onsubmit = onLogin;
+    mainDivNode.appendChild(loginPage.loginPageNode(onLoginCallback));
   } else if (state === 1) {
     mainDivNode.innerHTML = dom.mainString();
     // themeToggler
@@ -51,10 +50,7 @@ function renderBaseOnState(state) {
   }
 }
 
-function onLogin() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  // send request (to do)
+function onLoginCallback() {
   stateOfWeb = 1;
   renderBaseOnState(stateOfWeb);
 }
@@ -188,10 +184,4 @@ function deleteFilter(num) {
   updateTable(searchedCars);
 }
 
-// แก้ search field เป็น show filter with cancel button (DONE!)
-// เพิ่ม ปีผลิต(string) วันเวลาที่เพิ่มเข้าไปในดาต้าเบส(datetime) กับ วันเวลาที่แก้ไข(datetime)
-// แก้ HTML method ให้เป็นฟังก์ชั่น เพราะใช้ซ้ำ (DONE!)
-// ทำให้ปีแก้ไขได้ (DONE!)
-// เพิ่ม Added Date/ Modified Date ทุกครั้งที่กด submit เข้าไปในดาต้าเบสด้วย(DONE!)
-// แยกฟังก์ชั่นเป็นโมดูลต่างๆไว้ file อื่นๆ (on progress)
-// แก้ code ให้เวิร์คจจร้าาา (filter) (Done!)
+// ทำระบบ Login

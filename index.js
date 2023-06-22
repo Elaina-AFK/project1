@@ -22,7 +22,7 @@ const CarSchema = mongoose.Schema({
   modified: Date,
 });
 const Car = mongoose.model("Car", CarSchema, "carStock");
-//
+
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(
   bodyParser.urlencoded({
@@ -42,8 +42,20 @@ app.get("/api/carData", function (req, res) {
   });
 });
 
+app.post("/api/loginData", function (req, res) {
+  console.log("login (post) get called");
+  console.log("Got body:", req.body);
+  let message = "";
+
+  res.send(
+    JSON.stringify({
+      message,
+    })
+  );
+});
+
 app.post("/api/carData", function (req, res) {
-  console.log("(post) get called");
+  console.log("car (post) get called");
   console.log("Got body:", req.body);
   const addDate = +new Date();
   let id = addDate.toString(32);
