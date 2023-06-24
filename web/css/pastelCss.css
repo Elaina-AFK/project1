@@ -107,3 +107,8 @@ form.center input,select {
     position: relative;
     left: 50%;
 }
+
+*:disabled {
+    background-color: grey;
+    color: var(--white);
+}

@@ -24,7 +24,9 @@ function renderBaseOnState(state) {
     mainDivNode.innerHTML = "";
     //themeToggler
     mainDivNode.appendChild(loginPage.themeTogglerNode());
-    mainDivNode.appendChild(loginPage.loginPageNode(onLoginCallback));
+    mainDivNode.appendChild(
+      loginPage.loginPageNode(onLoginCallback, onSignInCallback)
+    );
   } else if (state === 1) {
     mainDivNode.innerHTML = dom.mainString();
     // themeToggler
@@ -52,6 +54,11 @@ function renderBaseOnState(state) {
 
 function onLoginCallback() {
   stateOfWeb = 1;
+  renderBaseOnState(stateOfWeb);
+}
+
+function onSignInCallback() {
+  stateOfWeb = 0;
   renderBaseOnState(stateOfWeb);
 }
 

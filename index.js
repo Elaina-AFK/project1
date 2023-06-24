@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+const login = require("./back/login.js");
 var fs = require("fs");
 // database
 var mongoose = require("mongoose");
@@ -10,6 +11,28 @@ db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function () {
   console.log("Connection Successful!");
 });
+
+const memberSchema = mongoose.Schema({
+  username: String,
+  password: String,
+  firstName: {
+    type: String,
+    default: "Default_first_name",
+  },
+  lastName: {
+    type: String,
+    default: "Default_last_name",
+  },
+  id: String,
+  role: {
+    type: String,
+    default: "member",
+  },
+  created: Date,
+});
+
+const Member = mongoose.model("member", memberSchema, "members");
+
 const CarSchema = mongoose.Schema({
   name: String,
   price: Number,
@@ -42,14 +65,40 @@ app.get("/api/carData", function (req, res) {
   });
 });
 
+app.post("/api/signInData", function (req, res) {
+  console.log("signIn (post) get called");
+  const userData = req.body;
+  console.log("Got login data:", userData);
+  const created = +new Date();
+  const id = created.toString(32);
+  const data = new Member({
+    ...userData,
+    id,
+    role: "member",
+    created,
+  });
+  data.save(function (err, member) {
+    if (err) console.log(err);
+    res.send(
+      JSON.stringify({
+        message: `${member.username} has been succesfully sign in!`,
+      })
+    );
+    console.log(
+      member.username,
+      "added to member collections [POST successful!]"
+    );
+  });
+});
+
 app.post("/api/loginData", function (req, res) {
   console.log("login (post) get called");
-  console.log("Got body:", req.body);
-  let message = "";
-
+  const userData = req.body;
+  console.log("Got login data:", userData);
+  const verifyStatus = login.verifyLogin();
   res.send(
     JSON.stringify({
-      message,
+      message: verifyStatus,
     })
   );
 });

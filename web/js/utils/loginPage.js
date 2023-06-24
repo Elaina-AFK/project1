@@ -1,13 +1,21 @@
 import api from "./api.js";
 
-function loginPageNode(callbackFn) {
-  // console.log("get called!");
+function loginPageNode(loginCallback, signInCallback) {
+  const div = createElementWithId("div", "loginPage");
+  // add main content
+  div.appendChild(loginNode(loginCallback));
+  div.appendChild(signInNode(signInCallback));
+
+  return div;
+}
+
+function loginNode(callbackFn) {
   const form = createElementWithId("form", "loginForm");
   const username = createLabelFor("username", "Username: ");
   const userField = createElementWithId("input", "username");
   const password = createLabelFor("password", "Password: ");
   const passField = createElementWithId("input", "password");
-  const submit = document.createElement("button");
+  const submit = createElementWithId("button", "loginSubmit");
   submit.type = "submit";
   submit.className = "button";
   submit.innerHTML = "LOGIN";
@@ -16,7 +24,7 @@ function loginPageNode(callbackFn) {
   form.appendChild(password);
   form.appendChild(passField);
   form.appendChild(submit);
-
+  form.appendChild(signInToggler());
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     verifying(callbackFn);
@@ -39,6 +47,88 @@ function verifying(callbackFn) {
       console.log(res.message);
       callbackFn();
     });
+}
+
+function signInNode(callBackFn) {
+  const div = createElementWithId("div", "signInDiv");
+  const form = createElementWithId("form", "signInForm");
+  const userLabel = createLabelFor("usernameS", "Username: ");
+  const username = createElementWithId("input", "usernameS");
+  const passLabel = createLabelFor("passwordS", "Password: ");
+  const password = createElementWithId("input", "passwordS");
+  const fnameLabel = createLabelFor("firstName", "First Name: ");
+  const firstName = createElementWithId("input", "firstName");
+  const lnameLabel = createLabelFor("lastName", "Last Name: ");
+  const lastName = createElementWithId("input", "lastName");
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.className = "button";
+  submit.innerHTML = "SIGN IN";
+  form.append(
+    userLabel,
+    username,
+    passLabel,
+    password,
+    fnameLabel,
+    firstName,
+    lnameLabel,
+    lastName,
+    submit
+  );
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    getSignIn(callBackFn);
+  });
+
+  div.appendChild(form);
+  div.hidden = true;
+
+  return div;
+}
+
+function getSignIn(callBackFn) {
+  const username = document.getElementById("usernameS").value;
+  const password = document.getElementById("passwordS").value;
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+  const signInData = {
+    username,
+    password,
+    firstName,
+    lastName,
+  };
+  api
+    .htmlMethod("POST", signInData, "/api/signInData")
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res.message);
+      callBackFn();
+    });
+}
+
+function signInToggler() {
+  const label = document.createElement("label");
+  const small = document.createElement("small");
+  const ins = document.createElement("ins");
+  const text = document.createTextNode("no account? Sign in here!");
+  ins.appendChild(text);
+  small.appendChild(ins);
+  label.appendChild(small);
+
+  label.addEventListener("click", function () {
+    const signInDiv = document.getElementById("signInDiv");
+    const loginSubmit = document.getElementById("loginSubmit");
+    if (signInDiv.hidden) {
+      signInDiv.hidden = false;
+      loginSubmit.disabled = true;
+    } else {
+      signInDiv.hidden = true;
+      loginSubmit.disabled = false;
+    }
+  });
+
+  return label;
 }
 
 function createLabelFor(forName, value) {
