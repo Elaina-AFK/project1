@@ -1,4 +1,5 @@
 import api from "./api.js";
+import utilities from "./utilities.js";
 
 function loginPageNode(loginCallback, signInCallback) {
   const div = createElementWithId("div", "loginPage");
@@ -98,6 +99,13 @@ function getSignIn(callBackFn) {
   const password = document.getElementById("passwordS");
   const firstName = document.getElementById("firstName");
   const lastName = document.getElementById("lastName");
+
+  let verifiedText = "";
+  verifiedText = utilities.verifiedText(username.value, "username");
+  if (verifiedText) return console.log(verifiedText);
+  verifiedText = utilities.verifiedText(password.value, "password");
+  if (verifiedText) return console.log(verifiedText);
+
   const signInData = {
     username: username.value,
     password: password.value,
