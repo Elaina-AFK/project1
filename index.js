@@ -1,7 +1,6 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
-const login = require("./back/login.js");
 var fs = require("fs");
 // database
 var mongoose = require("mongoose");
@@ -69,25 +68,35 @@ app.post("/api/signInData", function (req, res) {
   console.log("signIn (post) get called");
   const userData = req.body;
   console.log("Got login data:", userData);
-  const created = +new Date();
-  const id = created.toString(32);
-  const data = new Member({
-    ...userData,
-    id,
-    role: "member",
-    created,
-  });
-  data.save(function (err, member) {
+  Member.findOne({ username: userData.username }, (err, member) => {
     if (err) console.log(err);
-    res.send(
-      JSON.stringify({
-        message: `${member.username} has been succesfully sign in!`,
-      })
-    );
-    console.log(
-      member.username,
-      "added to member collections [POST successful!]"
-    );
+    if (member) {
+      return res.send(
+        JSON.stringify({
+          message: "This username is already taken!",
+        })
+      );
+    }
+    const created = +new Date();
+    const id = created.toString(32);
+    const data = new Member({
+      ...userData,
+      id,
+      role: "member",
+      created,
+    });
+    data.save(function (err, member) {
+      if (err) console.log(err);
+      res.send(
+        JSON.stringify({
+          message: `${member.username} has been succesfully sign in!`,
+        })
+      );
+      console.log(
+        member.username,
+        "added to member collections [POST successful!]"
+      );
+    });
   });
 });
 
@@ -95,11 +104,20 @@ app.post("/api/loginData", function (req, res) {
   console.log("login (post) get called");
   const userData = req.body;
   console.log("Got login data:", userData);
-  const verifyStatus = login.verifyLogin();
-  res.send(
-    JSON.stringify({
-      message: verifyStatus,
-    })
+  Member.findOne(
+    {
+      username: userData.username,
+      password: userData.password,
+    },
+    (err, memberData) => {
+      if (err) console.log(err);
+      const verifyStatus = memberData ? "pass" : "fail";
+      res.send(
+        JSON.stringify({
+          status: verifyStatus,
+        })
+      );
+    }
   );
 });
 

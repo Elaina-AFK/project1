@@ -28,6 +28,8 @@ function loginNode(callbackFn) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     verifying(callbackFn);
+    userField.value = "";
+    passField.value = "";
   });
 
   return form;
@@ -44,8 +46,12 @@ function verifying(callbackFn) {
     .htmlMethod("POST", loginData, "/api/loginData")
     .then((res) => res.json())
     .then((res) => {
-      console.log(res.message);
-      callbackFn();
+      if (res.status === "pass") {
+        console.log(`Successfully login as ${username}!`);
+        callbackFn();
+      } else if (res.status === "fail") {
+        console.log("Wrong username or password.");
+      }
     });
 }
 
@@ -88,15 +94,15 @@ function signInNode(callBackFn) {
 }
 
 function getSignIn(callBackFn) {
-  const username = document.getElementById("usernameS").value;
-  const password = document.getElementById("passwordS").value;
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
+  const username = document.getElementById("usernameS");
+  const password = document.getElementById("passwordS");
+  const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
   const signInData = {
-    username,
-    password,
-    firstName,
-    lastName,
+    username: username.value,
+    password: password.value,
+    firstName: firstName.value,
+    lastName: lastName.value,
   };
   api
     .htmlMethod("POST", signInData, "/api/signInData")
@@ -104,6 +110,10 @@ function getSignIn(callBackFn) {
     .then((res) => {
       console.log(res.message);
       callBackFn();
+      username.value = "";
+      password.value = "";
+      firstName.value = "";
+      lastName.value = "";
     });
 }
 
