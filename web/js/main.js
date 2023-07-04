@@ -4,62 +4,54 @@ import loginPage from "./utils/loginPage.js";
 
 let newCars = [];
 let searchedCars = [];
-let stateOfWeb = 0;
 let editState = 0;
 let searchedState = 0;
 let filterCounter = 0;
 let filterDict = {};
-// fetch
-fetch("/api/carData")
-  .then((res) => res.json())
-  .then((res) => {
-    const cars = res;
-    newCars = cars.slice();
-    renderBaseOnState(stateOfWeb);
+
+renderBaseOnState();
+
+function renderBaseOnState() {
+  api.getState((state) => {
+    const mainDivNode = document.getElementById("mainDiv");
+    if (state === 0) {
+      mainDivNode.innerHTML = "";
+      //themeToggler
+      mainDivNode.appendChild(loginPage.themeTogglerNode());
+      mainDivNode.appendChild(loginPage.loginPageNode(renderBaseOnState));
+    } else if (state === 1) {
+      fetch("/api/carData")
+        .then((res) => res.json())
+        .then((res) => {
+          const cars = res;
+          newCars = cars.slice();
+          mainDivNode.innerHTML = dom.mainString();
+          // themeToggler
+          const parent = mainDivNode;
+          parent.insertBefore(
+            loginPage.themeTogglerNode(),
+            mainDivNode.firstChild
+          );
+
+          // console.log("data: ", newCars);
+          updateTable(newCars);
+          dom.addYearOption();
+          // add onclick property
+          dom.addOnclickById("searchButton", searchByName);
+          dom.addOnclickById("submitButton", () => {
+            const fieldValue = {
+              name: document.getElementById("name"),
+              price: document.getElementById("price"),
+              year: document.getElementById("year"),
+            };
+            dom.verifySubmit(fieldValue, editState, newCars, (newData) => {
+              newCars.push(newData);
+              updateTable(newCars);
+            });
+          });
+        });
+    }
   });
-
-function renderBaseOnState(state) {
-  const mainDivNode = document.getElementById("mainDiv");
-  if (state === 0) {
-    mainDivNode.innerHTML = "";
-    //themeToggler
-    mainDivNode.appendChild(loginPage.themeTogglerNode());
-    mainDivNode.appendChild(
-      loginPage.loginPageNode(onLoginCallback, onSignInCallback)
-    );
-  } else if (state === 1) {
-    mainDivNode.innerHTML = dom.mainString();
-    // themeToggler
-    const parent = mainDivNode;
-    parent.insertBefore(loginPage.themeTogglerNode(), mainDivNode.firstChild);
-
-    // console.log("data: ", newCars);
-    updateTable(newCars);
-    dom.addYearOption();
-    // add onclick property
-    dom.addOnclickById("searchButton", searchByName);
-    dom.addOnclickById("submitButton", () => {
-      const fieldValue = {
-        name: document.getElementById("name"),
-        price: document.getElementById("price"),
-        year: document.getElementById("year"),
-      };
-      dom.verifySubmit(fieldValue, editState, newCars, (newData) => {
-        newCars.push(newData);
-        updateTable(newCars);
-      });
-    });
-  }
-}
-
-function onLoginCallback() {
-  stateOfWeb = 1;
-  renderBaseOnState(stateOfWeb);
-}
-
-function onSignInCallback() {
-  stateOfWeb = 0;
-  renderBaseOnState(stateOfWeb);
 }
 
 function updateTable(showedCars) {
@@ -191,4 +183,4 @@ function deleteFilter(num) {
   updateTable(searchedCars);
 }
 
-// ทำระบบ Login
+// ทำระบบ Logout and password

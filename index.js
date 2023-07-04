@@ -1,9 +1,9 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var fs = require("fs");
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const session = require("express-session");
 // database
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 mongoose.connect("mongodb://127.0.0.1:27017/test");
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -45,6 +45,16 @@ const CarSchema = mongoose.Schema({
 });
 const Car = mongoose.model("Car", CarSchema, "carStock");
 
+// session and cookies
+app.use(
+  session({
+    secret: "tempSecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
+
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(
   bodyParser.urlencoded({
@@ -54,11 +64,25 @@ app.use(
 );
 app.use(express.static("web"));
 
+// middleware
+
+const isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.user) {
+    return next();
+  }
+  return res.send(JSON.stringify({ state: 0 }));
+};
+
+// method handlers
 app.get("/", function (req, res) {
   res.send("<a href='http://localhost:8081/html/index.html'>car project</a>");
 });
 
-app.get("/api/carData", function (req, res) {
+app.get("/api/state", isAuthenticated, function (req, res) {
+  res.send(JSON.stringify({ state: 1 }));
+});
+
+app.get("/api/carData", isAuthenticated, function (req, res) {
   Car.find({}, (err, allCar) => {
     res.send(JSON.stringify(allCar));
   });
@@ -104,21 +128,24 @@ app.post("/api/loginData", function (req, res) {
   console.log("login (post) get called");
   const userData = req.body;
   console.log("Got login data:", userData);
-  Member.findOne(
-    {
-      username: userData.username,
-      password: userData.password,
-    },
-    (err, memberData) => {
-      if (err) console.log(err);
+  Member.findOne({
+    username: userData.username,
+    password: userData.password,
+  })
+    .then((memberData) => {
       const verifyStatus = memberData ? "pass" : "fail";
+      if (memberData) {
+        req.session.user = {};
+        req.session.user.username = memberData.username;
+        req.session.user.role = memberData.role;
+      }
       res.send(
         JSON.stringify({
           status: verifyStatus,
         })
       );
-    }
-  );
+    })
+    .catch((err) => console.log(err));
 });
 
 app.post("/api/carData", function (req, res) {

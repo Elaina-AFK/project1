@@ -1,11 +1,11 @@
 import api from "./api.js";
 import utilities from "./utilities.js";
 
-function loginPageNode(loginCallback, signInCallback) {
+function loginPageNode(renderCallBack) {
   const div = createElementWithId("div", "loginPage");
   // add main content
-  div.appendChild(loginNode(loginCallback));
-  div.appendChild(signInNode(signInCallback));
+  div.appendChild(loginNode(renderCallBack));
+  div.appendChild(signInNode(renderCallBack));
 
   return div;
 }

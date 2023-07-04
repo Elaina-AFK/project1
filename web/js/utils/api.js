@@ -14,4 +14,12 @@ function htmlMethod(method, data, path = "/api/carData") {
   });
 }
 
-export default { htmlMethod };
+function getState(callbackFn) {
+  fetch("/api/state")
+    .then((res) => res.json())
+    .then((res) => {
+      callbackFn(res.state);
+    });
+}
+
+export default { htmlMethod, getState };
