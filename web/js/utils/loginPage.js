@@ -149,6 +149,16 @@ function signInToggler() {
   return label;
 }
 
+function logoutNode(callBackFn) {
+  const button = document.createElement("button");
+  button.innerHTML = "Logout";
+  button.className = "button";
+  button.onclick = () => {
+    fetch("/api/logout").then(() => callBackFn());
+  };
+  return button;
+}
+
 function createLabelFor(forName, value) {
   const label = document.createElement("label");
   label.htmlFor = forName;
@@ -202,4 +212,4 @@ function disableAllCss() {
   css3.disabled = true;
 }
 
-export default { loginPageNode, themeTogglerNode };
+export default { loginPageNode, themeTogglerNode, logoutNode };

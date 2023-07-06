@@ -32,6 +32,10 @@ function renderBaseOnState() {
             loginPage.themeTogglerNode(),
             mainDivNode.firstChild
           );
+          parent.insertBefore(
+            loginPage.logoutNode(renderBaseOnState),
+            mainDivNode.firstChild
+          );
 
           // console.log("data: ", newCars);
           updateTable(newCars);

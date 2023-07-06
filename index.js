@@ -82,6 +82,13 @@ app.get("/api/state", isAuthenticated, function (req, res) {
   res.send(JSON.stringify({ state: 1 }));
 });
 
+app.get("/api/logout", function (req, res) {
+  req.session.destroy((err) => {
+    if (err) console.log("Error destroying session:", err);
+    res.redirect("/api/state");
+  });
+});
+
 app.get("/api/carData", isAuthenticated, function (req, res) {
   Car.find({}, (err, allCar) => {
     res.send(JSON.stringify(allCar));
