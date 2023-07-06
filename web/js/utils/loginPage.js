@@ -3,10 +3,11 @@ import utilities from "./utilities.js";
 
 function loginPageNode(renderCallBack) {
   const div = createElementWithId("div", "loginPage");
+  const divVerify = createElementWithId("div", "verifyingText");
   // add main content
   div.appendChild(loginNode(renderCallBack));
   div.appendChild(signInNode(renderCallBack));
-
+  div.appendChild(divVerify);
   return div;
 }
 
@@ -48,10 +49,10 @@ function verifying(callbackFn) {
     .then((res) => res.json())
     .then((res) => {
       if (res.status === "pass") {
-        console.log(`Successfully login as ${username}!`);
+        changeVerifyText("success", `login as ${username} successful!`);
         callbackFn();
       } else if (res.status === "fail") {
-        console.log("Wrong username or password.");
+        changeVerifyText("warning", "wrong username or password!");
       }
     });
 }
@@ -99,12 +100,16 @@ function getSignIn(callBackFn) {
   const password = document.getElementById("passwordS");
   const firstName = document.getElementById("firstName");
   const lastName = document.getElementById("lastName");
+  username.setAttribute("required", "");
+  password.setAttribute("required", "");
+  firstName.setAttribute("required", "");
+  lastName.setAttribute("required", "");
 
   let verifiedText = "";
   verifiedText = utilities.verifiedText(username.value, "username");
-  if (verifiedText) return console.log(verifiedText);
+  if (verifiedText) return changeVerifyText("warning", verifiedText);
   verifiedText = utilities.verifiedText(password.value, "password");
-  if (verifiedText) return console.log(verifiedText);
+  if (verifiedText) return changeVerifyText("warning", verifiedText);
 
   const signInData = {
     username: username.value,
@@ -116,8 +121,8 @@ function getSignIn(callBackFn) {
     .htmlMethod("POST", signInData, "/api/signInData")
     .then((res) => res.json())
     .then((res) => {
-      console.log(res.message);
       callBackFn();
+      changeVerifyText("warning", res.message);
       username.value = "";
       password.value = "";
       firstName.value = "";
@@ -210,6 +215,24 @@ function disableAllCss() {
   css1.disabled = true;
   css2.disabled = true;
   css3.disabled = true;
+}
+
+function verifyTextNode(textType, text) {
+  const label = document.createElement("label");
+  const strong = document.createElement("strong");
+  const textNode = document.createTextNode(text);
+  label.className = textType;
+
+  label.appendChild(strong);
+  label.appendChild(textNode);
+
+  return label;
+}
+
+function changeVerifyText(textType, text) {
+  const verifiedDiv = document.getElementById("verifyingText");
+  verifiedDiv.innerHTML = "";
+  verifiedDiv.appendChild(verifyTextNode(textType, text));
 }
 
 export default { loginPageNode, themeTogglerNode, logoutNode };

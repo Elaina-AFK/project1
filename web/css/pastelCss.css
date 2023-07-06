@@ -112,3 +112,11 @@ form.center input,select {
     background-color: grey;
     color: var(--white);
 }
+
+.warning {
+    color: red;
+}
+
+.success {
+    color: green;
+}

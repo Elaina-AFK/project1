@@ -98,15 +98,16 @@ app.get("/api/carData", isAuthenticated, function (req, res) {
 app.post("/api/signInData", function (req, res) {
   console.log("signIn (post) get called");
   const userData = req.body;
-  console.log("Got login data:", userData);
+  console.log("Got sign in data:", userData);
   Member.findOne({ username: userData.username }, (err, member) => {
     if (err) console.log(err);
     if (member) {
-      return res.send(
+      res.send(
         JSON.stringify({
           message: "This username is already taken!",
         })
       );
+      return;
     }
     const created = +new Date();
     const id = created.toString(32);
@@ -145,6 +146,9 @@ app.post("/api/loginData", function (req, res) {
         req.session.user = {};
         req.session.user.username = memberData.username;
         req.session.user.role = memberData.role;
+        console.log("login successfully!");
+      } else {
+        console.log("login failed!");
       }
       res.send(
         JSON.stringify({

@@ -116,3 +116,11 @@ h2 {
     background-color: grey;
     color: var(--white);
 }
+
+.warning {
+    color: red;
+}
+
+.success {
+    color: green;
+}
